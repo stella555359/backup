@@ -1,0 +1,1464 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sunny's 3D Speech Stage - Pure WebGL Three.js Presenter</title>
+    <!-- 引入谷歌童趣及现代字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    
+    <!-- 引入 WebGL 渲染基石 Three.js 库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <style>
+        :root {
+            --stage-bg: #030214;
+            --board-bg: #ffffff;
+            --text-color: #0f172a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Quicksand', 'Microsoft YaHei', sans-serif;
+            background-color: #02020d;
+            color: #f8fafc;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            perspective: 1200px;
+        }
+
+        /* 3D 剧场大容器 */
+        .theatre-container {
+            width: 95%;
+            max-width: 1200px;
+            height: 90vh;
+            max-height: 780px;
+            background-color: var(--stage-bg);
+            border-radius: 40px;
+            border: 12px solid #111029;
+            box-shadow: 0 35px 60px -15px rgba(0, 0, 0, 0.8), 0 0 40px rgba(99, 102, 241, 0.15);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* 顶部标题栏 */
+        .header-bar {
+            padding: 16px 35px;
+            background: linear-gradient(90deg, #09071f 0%, #13113c 100%);
+            border-bottom: 4px solid #1f1d4f;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .header-title {
+            font-family: 'Fredoka One', sans-serif;
+            font-size: 22px;
+            color: #38bdf8;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+        }
+
+        .header-title svg {
+            animation: rotate-title-globe 15s infinite linear;
+            transform-origin: center;
+        }
+
+        @keyframes rotate-title-globe {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .scheme-tag {
+            background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
+            color: white;
+            font-size: 13px;
+            font-weight: bold;
+            padding: 6px 14px;
+            border-radius: 12px;
+            box-shadow: 0 0 8px rgba(37, 99, 235, 0.4);
+        }
+
+        /* 剧场舞台主区域 */
+        .stage-area {
+            flex: 1;
+            display: flex;
+            position: relative;
+            background: radial-gradient(circle at center, #13113c 0%, #030214 100%);
+            padding: 20px;
+            gap: 30px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 左侧：WebGL 3D 渲染画布容器 */
+        .left-webgl-stage {
+            flex: 1;
+            height: 100%;
+            position: relative;
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 30px;
+            overflow: hidden;
+            border: 2px solid rgba(99, 102, 241, 0.1);
+        }
+
+        #webgl-canvas-container {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        /* WebGL 上的操控提示罩层 */
+        .webgl-hud-tip {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            background-color: rgba(15, 23, 42, 0.6);
+            padding: 6px 12px;
+            border-radius: 10px;
+            font-size: 11px;
+            color: #94a3b8;
+            pointer-events: none;
+            z-index: 5;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        /* 右侧：超大智慧投影屏幕 */
+        .right-projector-screen {
+            flex: 1.15;
+            height: 85%;
+            background-color: var(--board-bg);
+            border-radius: 28px;
+            border: 10px solid #4b5563;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), inset 0 0 25px rgba(0,0,0,0.15);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 25px;
+            color: var(--text-color);
+            z-index: 5;
+        }
+
+        .screen-bezel-bottom {
+            width: 180px;
+            height: 14px;
+            background-color: #9ca3af;
+            border-radius: 5px;
+            position: absolute;
+            bottom: -7px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 5px 8px rgba(0,0,0,0.2);
+        }
+
+        /* 投影仪幻灯片库 */
+        .projector-slides {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .projector-slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            transition: opacity 0.6s ease-in-out, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transform: scale(0.9) translateY(10px);
+        }
+
+        .projector-slide.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: scale(1) translateY(0);
+        }
+
+        .slide-graphic {
+            flex: 1.3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .slide-text {
+            flex: 0.7;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            width: 100%;
+            padding: 0 25px;
+        }
+
+        .slide-en-txt {
+            font-family: 'Fredoka One', 'Quicksand', sans-serif;
+            font-size: 26px;
+            line-height: 1.3;
+            color: #0284c7;
+            font-weight: bold;
+        }
+
+        /* 悬浮提词HUD板 */
+        .subtitle-overlay-panel {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(10, 10, 26, 0.85);
+            border: 2px solid #4338ca;
+            padding: 15px 35px;
+            border-radius: 24px;
+            text-align: center;
+            max-width: 82%;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5), 0 0 15px rgba(99, 102, 241, 0.3);
+            backdrop-filter: blur(12px);
+            z-index: 100;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .subtitle-en {
+            font-family: 'Fredoka One', 'Quicksand', sans-serif;
+            font-size: 22px;
+            color: #38bdf8;
+            font-weight: bold;
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .subtitle-cn {
+            font-size: 16px;
+            color: #cbd5e1;
+            font-weight: 500;
+        }
+
+        /* 控制台 */
+        .control-console {
+            background-color: #060517;
+            padding: 22px 35px;
+            border-top: 4px solid #141235;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .console-btn {
+            font-family: 'Fredoka One', 'Quicksand', sans-serif;
+            font-size: 16px;
+            padding: 12px 24px;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-primary {
+            background-color: #0ea5e9;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #0284c7;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(2, 132, 199, 0.4);
+        }
+
+        .btn-secondary {
+            background-color: #141235;
+            color: #f3f4f6;
+            border: 1px solid #2a2569;
+        }
+
+        .btn-secondary:hover {
+            background-color: #211c57;
+            transform: translateY(-1px);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 14px 35px;
+            font-size: 18px;
+            border-radius: 28px;
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-success:hover {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.55);
+        }
+
+        .btn-success.playing {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-success.playing:hover {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 16px;
+            color: #9ca3af;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .checkbox-container input {
+            cursor: pointer;
+            width: 20px;
+            height: 20px;
+            accent-color: #0ea5e9;
+        }
+
+        /* SVG 幻灯片内动画 */
+        .pulse { animation: pulse-ani 2.5s infinite ease-in-out; }
+        .rotate-earth { animation: rotate-ani 8s infinite linear; transform-origin: center; }
+        .shake { animation: shake-ani 4s infinite ease-in-out; }
+        .twinkle { animation: twinkle-ani 1.5s infinite ease-in-out; }
+
+        @keyframes pulse-ani { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+        @keyframes rotate-ani { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes shake-ani { 0%, 100% { transform: rotate(0deg) translateY(0); } 25% { transform: rotate(2.5deg) translateY(-2px); } 75% { transform: rotate(-2.5deg) translateY(2px); } }
+        @keyframes twinkle-ani { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <div class="theatre-container">
+        <!-- 1. 顶部标题栏 -->
+        <div class="header-bar">
+            <div class="header-title">
+                <svg width="26" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10" stroke="#38bdf8" stroke-width="2.5"/>
+                    <path d="M12 2C14.5 4.5 15.5 8 15.5 12C15.5 16 14.5 19.5 12 22C9.5 19.5 8.5 16 8.5 12C8.5 8 9.5 4.5 12 2Z" stroke="#38bdf8" stroke-width="2"/>
+                    <line x1="2" y1="12" x2="22" y2="12" stroke="#38bdf8" stroke-width="2"/>
+                </svg>
+                <span>Sunny's 3D English Speech Stage</span>
+            </div>
+            <div class="scheme-tag">方案 A：纯 WebGL 3D 骨骼蒙皮</div>
+        </div>
+
+        <!-- 2. 主舞台（WebGL + 幻灯片） -->
+        <div class="stage-area">
+            <!-- 左侧：WebGL 3D 画布 -->
+            <div class="left-webgl-stage">
+                <div class="webgl-hud-tip">双击/拖拽 3D 画面可旋转视角</div>
+                <div id="webgl-canvas-container"></div>
+            </div>
+
+            <!-- 右侧：多媒体智慧投影屏幕 -->
+            <div class="right-projector-screen" id="smart-projector">
+                <div class="projector-slides">
+                    <!-- Slide 1: Cover -->
+                    <div class="projector-slide active" data-index="0" data-theme="day" data-gesture="wave" data-expression="happy">
+                        <div class="slide-graphic">
+                            <svg width="160" height="160" viewBox="0 0 200 200" class="pulse shake">
+                                <circle cx="100" cy="100" r="80" fill="#38bdf8" />
+                                <path d="M50 70C60 60 80 65 90 80C100 95 95 110 80 115C65 120 40 100 50 70Z" fill="#4ade80" />
+                                <path d="M120 60C130 55 150 70 145 90C140 110 125 105 115 95C105 85 110 65 120 60Z" fill="#4ade80" />
+                                <path d="M90 130C105 120 130 130 140 145C130 160 100 165 85 150C70 135 75 140 90 130Z" fill="#4ade80" />
+                                <circle cx="85" cy="95" r="7" fill="#0f172a" />
+                                <circle cx="115" cy="95" r="7" fill="#0f172a" />
+                                <circle cx="83" cy="92" r="2.5" fill="white" />
+                                <circle cx="113" cy="92" r="2.5" fill="white" />
+                                <path d="M95 105Q100 112 105 105" stroke="#0f172a" stroke-width="4" stroke-linecap="round" fill="none" />
+                            </svg>
+                        </div>
+                        <div class="slide-text">
+                            <div class="slide-en-txt">"My Speech: The Earth"</div>
+                            <div style="font-size: 15px; color: #64748b; margin-top: 5px; font-weight: bold;">Presented by Sunny</div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 2: Welcome -->
+                    <div class="projector-slide" data-index="1" data-theme="day" data-gesture="welcome" data-expression="normal">
+                        <div class="slide-graphic">
+                            <svg width="180" height="150" viewBox="0 0 220 200">
+                                <ellipse cx="105" cy="90" rx="58" ry="42" fill="none" stroke="#fbbf24" stroke-width="2.5" stroke-dasharray="6 8" class="pulse" />
+                                <g class="pulse" style="transform-origin: 155px 55px;">
+                                    <circle cx="155" cy="55" r="24" fill="#fbbf24" stroke="#f59e0b" stroke-width="2" />
+                                    <line x1="155" y1="23" x2="155" y2="15" stroke="#f59e0b" stroke-width="3" stroke-linecap="round" />
+                                    <line x1="155" y1="87" x2="155" y2="95" stroke="#f59e0b" stroke-width="3" stroke-linecap="round" />
+                                    <circle cx="147" cy="51" r="2.5" fill="#d97706" />
+                                    <circle cx="163" cy="51" r="2.5" fill="#d97706" />
+                                    <path d="M151 59Q155 63 159 59" stroke="#d97706" stroke-width="2" stroke-linecap="round" fill="none" />
+                                </g>
+                                <g class="shake" style="transform-origin: 55px 55px;">
+                                    <path d="M65 30 A 25 25 0 1 0 65 80 A 18 18 0 1 1 65 30 Z" fill="#fde047" stroke="#f59e0b" stroke-width="1.5" />
+                                </g>
+                                <g class="pulse" style="transform-origin: 105px 125px;">
+                                    <circle cx="105" cy="125" r="46" fill="#38bdf8" />
+                                    <path d="M80 115C85 105 100 110 105 120C110 130 95 135 85 130Z" fill="#4ade80" />
+                                    <path d="M125 135C135 125 148 135 142 145C135 155 120 150 118 140Z" fill="#4ade80" />
+                                    <circle cx="93" cy="122" r="4.5" fill="#0f172a" />
+                                    <circle cx="117" cy="122" r="4.5" fill="#0f172a" />
+                                    <path d="M101 128Q105 133 109 128" stroke="#0f172a" stroke-width="3" stroke-linecap="round" fill="none" />
+                                </g>
+                            </svg>
+                        </div>
+                        <div class="slide-text">
+                            <div class="slide-en-txt">"Hello everyone!<br>Today I want to talk about the Earth."</div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 3: Big blue ball -->
+                    <div class="projector-slide" data-index="2" data-theme="seas-land" data-gesture="circle" data-expression="happy">
+                        <div class="slide-graphic">
+                            <svg width="150" height="150" viewBox="0 0 220 220">
+                                <circle cx="110" cy="110" r="82" fill="#60a5fa" opacity="0.2" class="pulse" style="transform-origin: 110px 110px;" />
+                                <g class="rotate-earth" style="transform-origin: 110px 110px;">
+                                    <circle cx="110" cy="110" r="70" fill="#1d4ed8" />
+                                    <path d="M70 60C85 50 100 65 95 85C90 105 65 100 55 85C45 70 55 70 70 60Z" fill="#22c55e" />
+                                    <path d="M130 80C140 60 170 70 165 95C160 120 130 110 120 100C110 90 120 100 130 80Z" fill="#22c55e" />
+                                    <path d="M80 130C100 120 125 125 140 145C120 165 90 160 75 150C60 140 60 140 80 130Z" fill="#22c55e" />
+                                </g>
+                            </svg>
+                        </div>
+                        <div class="slide-text">
+                            <div class="slide-en-txt">"The Earth is a big blue ball.<br>It has blue seas and green land."</div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 4: We live on the Earth -->
+                    <div class="projector-slide" data-index="3" data-theme="day" data-gesture="welcome" data-expression="normal">
+                        <div class="slide-graphic">
+                            <svg width="180" height="150" viewBox="0 0 240 200">
+                                <path d="M10 170Q120 110 230 170" fill="none" stroke="#22c55e" stroke-width="12" stroke-linecap="round" />
+                                <path d="M10 170Q120 110 230 170 L230 200 L10 200 Z" fill="#eff6ff" />
+                                <g class="pulse" style="transform-origin: 135px 120px;">
+                                    <rect x="109" y="105" width="12" height="18" rx="3" fill="#0284c7" />
+                                    <circle cx="115" cy="98" r="7" fill="#fed7aa" />
+                                    <polygon points="148,126 162,126 155,108" fill="#f43f5e" />
+                                    <circle cx="155" cy="102" r="6.5" fill="#fed7aa" />
+                                    <rect x="131" y="115" width="8" height="11" rx="2" fill="#fbbf24" />
+                                    <circle cx="135" cy="110" r="5" fill="#fed7aa" />
+                                    <path d="M121 108Q127 116 131 118" fill="none" stroke="#fed7aa" stroke-width="2.5" stroke-linecap="round" />
+                                    <path d="M149 110Q142 116 139 118" fill="none" stroke="#fed7aa" stroke-width="2.5" stroke-linecap="round" />
+                                </g>
+                            </svg>
+                        </div>
+                        <div class="slide-text">
+                            <div class="slide-en-txt">"We live on the Earth."</div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 5: Stars and moon -->
+                    <div class="projector-slide" data-index="4" data-theme="night" data-gesture="point" data-expression="normal">
+                        <div class="slide-graphic">
+                            <svg width="180" height="150" viewBox="0 0 220 200">
+                                <path d="M150 50 A 55 55 0 1 0 150 150 A 45 45 0 1 1 150 50 Z" fill="#fde047" class="shake" style="transform-origin: 110px 100px;"/>
+                                <polygon points="40,30 43,38 52,38 45,43 47,51 40,46 33,51 35,43 28,38 37,38" fill="#fef08a" class="twinkle" />
+                                <polygon points="50,130 52,135 57,135 53,138 54,143 50,140 46,143 47,138 43,135 48,135" fill="#fef08a" class="twinkle" style="animation-delay: 0.3s;" />
+                                <circle cx="25" cy="90" r="2.5" fill="#fff" class="twinkle" style="animation-delay: 0.2s;" />
+                            </svg>
+                        </div>
+                        <div class="slide-text">
+                            <div class="slide-en-txt">"We can see many stars<br>and the moon at night."</div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 6: The Sun -->
+                    <div class="projector-slide" data-index="5" data-theme="day" data-gesture="point" data-expression="happy">
+                        <div class="slide-graphic">
+                            <svg width="150" height="150" viewBox="0 0 200 200">
+                                <g class="pulse" style="transform-origin: 100px 100px;">
+                                    <circle cx="100" cy="100" r="50" fill="#f97316" />
+                                    <circle cx="100" cy="100" r="42" fill="#fbbf24" />
+                                    <circle cx="85" cy="95" r="6" fill="#1e293b" />
+                                    <circle cx="115" cy="95" r="6" fill="#1e293b" />
+                                    <path d="M90 110Q100 125 110 110 Z" fill="#e11d48" />
+                                </g>
+                            </svg>
+                        </div>
+                        <div class="slide-text">
+                            <div class="slide-en-txt">"The sun is hot and bright.<br>It gives us light and warm sunshine."</div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 7: Save Earth -->
+                    <div class="projector-slide" data-index="6" data-theme="day" data-gesture="love" data-expression="happy">
+                        <div class="slide-graphic">
+                            <svg width="180" height="150" viewBox="0 0 220 200">
+                                <g class="pulse" style="transform-origin: 110px 105px;">
+                                    <circle cx="110" cy="105" r="54" fill="#38bdf8" />
+                                    <path d="M70 75C80 60 95 65 100 80C105 95 95 110 80 115C65 120 55 95 70 75Z" fill="#4ade80" />
+                                    <circle cx="92" cy="98" r="5" fill="#0f172a" />
+                                    <circle cx="128" cy="98" r="5" fill="#0f172a" />
+                                    <path d="M104 109Q110 115 116 109" stroke="#0f172a" stroke-width="3" stroke-linecap="round" fill="none" />
+                                </g>
+                                <g class="pulse" style="transform-origin: 110px 145px; animation-delay: 0.1s;">
+                                    <path d="M110 152 C 92 130, 87 110, 110 125 C 133 110, 128 130, 110 152 Z" fill="#ff4b5c" stroke="#e11d48" stroke-width="2.5" />
+                                </g>
+                            </svg>
+                        </div>
+                        <div class="slide-text">
+                            <div class="slide-en-txt">"We have only one Earth.<br>I love the Earth."</div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 8: Thank You -->
+                    <div class="projector-slide" data-index="7" data-theme="day" data-gesture="bow" data-expression="happy">
+                        <div class="slide-graphic">
+                            <svg width="150" height="150" viewBox="0 0 200 200" class="shake">
+                                <circle cx="100" cy="100" r="30" fill="#fcd34d" stroke="#f59e0b" stroke-width="3" />
+                                <circle cx="100" cy="100" r="30" fill="#fde047" />
+                                <circle cx="90" cy="95" r="3" fill="#b45309" />
+                                <circle cx="110" cy="95" r="3" fill="#b45309" />
+                                <path d="M93 105Q100 112 107 105" stroke="#b45309" stroke-width="3" stroke-linecap="round" fill="none" />
+                            </svg>
+                        </div>
+                        <div class="slide-text">
+                            <div class="slide-en-txt" style="font-size: 32px; color: #ec4899; font-family: 'Fredoka One', sans-serif;">"Thank you!"</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="screen-bezel-bottom"></div>
+            </div>
+
+            <!-- 2.3 悬浮智慧提词板 HUD -->
+            <div class="subtitle-overlay-panel" id="subtitle-panel">
+                <div class="subtitle-en" id="sub-en">3D Presenter Ready! Click START to run.</div>
+                <div class="subtitle-cn" id="sub-cn">超级AI模拟演讲台加载完毕！点击下方按钮开启拟真自动演播。</div>
+            </div>
+        </div>
+
+        <!-- 3. 控制台 -->
+        <div class="control-console">
+            <button class="console-btn btn-success" id="main-play-btn" onclick="toggleAutoShow()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" id="play-btn-icon"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                <span id="play-btn-text">开启全程自动演讲</span>
+            </button>
+
+            <div class="btn-group">
+                <button class="console-btn btn-secondary" onclick="prevSlide()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                    <span>上一页</span>
+                </button>
+                <button class="console-btn btn-secondary" onclick="nextSlide()">
+                    <span>下一页</span>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </button>
+                <button class="console-btn btn-secondary" onclick="repeatCurrent()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                    <span>单句精读</span>
+                </button>
+            </div>
+
+            <label class="checkbox-container">
+                <input type="checkbox" id="subtitle-toggle" checked onchange="toggleSubtitles()">
+                <span>显示智能提词板</span>
+            </label>
+        </div>
+    </div>
+
+    <!-- WebGL (Three.js) 3D 骨骼渲染及全套动作动画引擎 -->
+    <script>
+        let scene, camera, renderer;
+        let presenterGroup;
+        let rightShoulder, rightElbow, leftShoulder, leftElbow;
+        let neck, head, torso, hips;
+        let leftHip, rightHip;
+        let dynamicCanvas, dynamicContext, faceTexture;
+        let currentSlide = 0;
+        let isPlaying = false;
+        let speechUtterance = null;
+        let animationFrameId = null;
+
+        // 面部贴图参数
+        let faceParams = {
+            mouthOpen: 0,       // 0-1 (说话口型)
+            eyesHappy: false,   // 是否眯眼笑弯弯
+            pupilOffsetX: 0,    // 眼神侧看偏置
+            pupilOffsetY: 0,
+            blink: 0            // 眨眼状态 (0正常, 1闭眼)
+        };
+
+        // 骨骼角度目标寄存器（用于阻尼平滑动画 Lerp 算法，拒绝生硬切帧）
+        let targetRotations = {
+            torsoX: 0, torsoY: 0, torsoZ: 0,
+            neckX: 0, neckY: 0, neckZ: 0,
+            headX: 0, headY: 0, headZ: 0,
+            lShoulderX: 0, lShoulderY: 0, lShoulderZ: 0.1,
+            lElbowX: -0.2, lElbowY: 0,
+            rShoulderX: 0, rShoulderY: 0, rShoulderZ: -0.1,
+            rElbowX: 0.2, rElbowY: 0,
+            lHipX: 0, rHipX: 0,
+            presenterY: -3 // 呼吸漂移
+        };
+
+        // 骨骼当前角度（运行帧实时状态）
+        let currentRotations = { ...targetRotations };
+
+        const slides = document.querySelectorAll('.projector-slide');
+        const presentation = document.getElementById('smart-projector');
+        const totalSlides = slides.length;
+        const subEn = document.getElementById('sub-en');
+        const subCn = document.getElementById('sub-cn');
+
+        const speechSubtitles = {
+            0: { en: "My Speech: The Earth. Presented by Sunny.", cn: "我的演讲：《地球》。演讲者：Sunny。" },
+            1: { en: "Hello, everyone! Today, I want to talk... about the Earth.", cn: "大家好！今天我想和大家聊聊我们的地球。" },
+            2: { en: "The Earth is a big... blue... ball! It has blue seas, and green land.", cn: "地球是一个大大的、蓝色的球！它有蓝色的海洋和绿色的陆地。" },
+            3: { en: "We... live on the Earth!", cn: "我们就住在这个美丽的地球上！" },
+            4: { en: "We can see many stars... and the moon... at night.", cn: "在静悄悄的夜晚，我们可以看到满天的繁星和弯弯的月亮。" },
+            5: { en: "The sun is hot... and bright! It gives us light, and warm sunshine.", cn: "太阳是火热而明亮的。它带给我们光明，还有暖洋洋的阳光。" },
+            6: { en: "We have only... one Earth. I... love the Earth!", cn: "我们只有一个地球。我好爱我们的地球！" },
+            7: { en: "Thank you, everyone!", cn: "谢谢大家！" }
+        };
+
+        const synth = window.speechSynthesis;
+
+        // --- 1. WEBGL THREE.JS 3D 建模系统 ---
+        function init3D() {
+            const container = document.getElementById('webgl-canvas-container');
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+
+            // 创建场景
+            scene = new THREE.Scene();
+            scene.background = null; // 保持透明度以透出背景星空
+
+            // 创建相机
+            camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 1000);
+            camera.position.set(0, 2.5, 9); // 立体完美焦距
+
+            // 创建渲染器
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(width, height);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            container.appendChild(renderer.domElement);
+
+            // 补光设计 (3D Stage Light)
+            const ambientLight = new THREE.AmbientLight(0x2d1f66, 1.2); // 环境紫光
+            scene.add(ambientLight);
+
+            const spotLight1 = new THREE.SpotLight(0xfffbeb, 4); // 主金色聚光灯
+            spotLight1.position.set(-4, 10, 5);
+            spotLight1.angle = Math.PI / 6;
+            spotLight1.penumbra = 0.5;
+            spotLight1.castShadow = true;
+            scene.add(spotLight1);
+
+            const spotLight2 = new THREE.SpotLight(0x38bdf8, 2.5); // 副冷蓝氛围聚光灯
+            spotLight2.position.set(4, 8, 4);
+            spotLight2.angle = Math.PI / 5;
+            scene.add(spotLight2);
+
+            // 建立木纹地台 (Podium Plate)
+            const podiumGeom = new THREE.CylinderGeometry(2, 2.1, 0.4, 32);
+            const podiumMat = new THREE.MeshPhongMaterial({
+                color: 0x78350f,
+                shininess: 80,
+                bumpScale: 0.05
+            });
+            const podium = new THREE.Mesh(podiumGeom, podiumMat);
+            podium.position.set(0, -3.2, 0);
+            podium.receiveShadow = true;
+            scene.add(podium);
+
+            // 建立金黄镶边
+            const rimGeom = new THREE.CylinderGeometry(2.05, 2.05, 0.05, 32);
+            const rimMat = new THREE.MeshPhongMaterial({ color: 0xf59e0b, emissive: 0xb45309 });
+            const rim = new THREE.Mesh(rimGeom, rimMat);
+            rim.position.set(0, -3.0, 0);
+            scene.add(rim);
+
+            // 动态纹理面部Canvas创建
+            dynamicCanvas = document.createElement('canvas');
+            dynamicCanvas.width = 256;
+            dynamicCanvas.height = 256;
+            dynamicContext = dynamicCanvas.getContext('2d');
+            faceTexture = new THREE.CanvasTexture(dynamicCanvas);
+
+            // 核心开始搭建：3D 骨骼分层Sunny
+            presenterGroup = new THREE.Group();
+            presenterGroup.position.y = -3;
+            scene.add(presenterGroup);
+
+            // 1. 臀/胯部 (Hips Base)
+            const hipsGeom = new THREE.BoxGeometry(0.9, 0.3, 0.6);
+            const pantsMat = new THREE.MeshPhongMaterial({ color: 0x334155, roughness: 0.8 }); // 西裤灰色
+            hips = new THREE.Mesh(hipsGeom, pantsMat);
+            hips.position.set(0, 1.2, 0);
+            presenterGroup.add(hips);
+
+            // 2. 裤腿与双脚
+            const legGeom = new THREE.CylinderGeometry(0.18, 0.15, 1.0, 16);
+            const leftLeg = new THREE.Mesh(legGeom, pantsMat);
+            leftLeg.position.set(-0.25, -0.5, 0);
+            hips.add(leftLeg);
+
+            const rightLeg = new THREE.Mesh(legGeom, pantsMat);
+            rightLeg.position.set(0.25, -0.5, 0);
+            hips.add(rightLeg);
+
+            const shoeGeom = new THREE.BoxGeometry(0.3, 0.22, 0.55);
+            const shoeMat = new THREE.MeshPhongMaterial({ color: 0xef4444 }); // 红色篮球鞋
+            const leftShoe = new THREE.Mesh(shoeGeom, shoeMat);
+            leftShoe.position.set(-0.25, -1.05, 0.1);
+            hips.add(leftShoe);
+
+            const rightShoe = new THREE.Mesh(shoeGeom, shoeMat);
+            rightShoe.position.set(0.25, -1.05, 0.1);
+            hips.add(rightShoe);
+
+            // 3. 躯干/衣服主体 (Torso - Pivot at bottom connection with hip)
+            torso = new THREE.Group();
+            torso.position.set(0, 0.15, 0); // 相对于胯的轴心
+            hips.add(torso);
+
+            const shirtGeom = new THREE.BoxGeometry(1.0, 1.2, 0.65);
+            const shirtMat = new THREE.MeshPhongMaterial({ color: 0x1d4ed8 }); // 皇家蓝西服衬衫
+            const shirtMesh = new THREE.Mesh(shirtGeom, shirtMat);
+            shirtMesh.position.set(0, 0.6, 0); // 往上偏移，保持组的原点在腹部
+            shirtMesh.castShadow = true;
+            torso.add(shirtMesh);
+
+            // 领结 (Bowtie)
+            const tieGeom = new THREE.ConeGeometry(0.18, 0.25, 4);
+            const tieMat = new THREE.MeshPhongMaterial({ color: 0xef4444, shininess: 30 });
+            const tieL = new THREE.Mesh(tieGeom, tieMat);
+            tieL.rotation.z = Math.PI / 2;
+            tieL.position.set(-0.12, 1.15, 0.35);
+            torso.add(tieL);
+
+            const tieR = new THREE.Mesh(tieGeom, tieMat);
+            tieR.rotation.z = -Math.PI / 2;
+            tieR.position.set(0.12, 1.15, 0.35);
+            torso.add(tieR);
+
+            const knotGeom = new THREE.SphereGeometry(0.06, 16, 16);
+            const knotMat = new THREE.MeshPhongMaterial({ color: 0x9f1239 });
+            const tieKnot = new THREE.Mesh(knotGeom, knotMat);
+            tieKnot.position.set(0, 1.15, 0.38);
+            torso.add(tieKnot);
+
+            // 4. 脖子与头部层级 (Neck -> Head)
+            neck = new THREE.Group();
+            neck.position.set(0, 1.2, 0); // 脖子轴在衣服顶端
+            torso.add(neck);
+
+            const skinMat = new THREE.MeshPhongMaterial({ color: 0xfecdb3, roughness: 0.7 }); // 娇嫩黄皮肤
+            const neckMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.3, 16), skinMat);
+            neckMesh.position.set(0, 0.15, 0);
+            neck.add(neckMesh);
+
+            head = new THREE.Group();
+            head.position.set(0, 0.3, 0); // 头部连接在脖子顶端
+            neck.add(head);
+
+            // 面部高精圆角盒（多材质拼装，前面用Canvas动态贴图，其余五面用皮肤材质）
+            const faceMaterials = [
+                skinMat, // 右
+                skinMat, // 左
+                skinMat, // 顶
+                skinMat, // 底
+                new THREE.MeshPhongMaterial({ map: faceTexture, roughness: 0.6 }), // 前脸 (精妙Canvas)
+                skinMat  // 后
+            ];
+            const headMesh = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.85, 0.8), faceMaterials);
+            headMesh.castShadow = true;
+            head.add(headMesh);
+
+            // 头发层级系统 (Voxel layered volumetric hair, 绝不再像帽子，饱满、有空间感)
+            const hairMat = new THREE.MeshPhongMaterial({ color: 0x1e293b, roughness: 0.9 }); // 灰黑色发丝
+            const hairGroup = new THREE.Group();
+            head.add(hairGroup);
+
+            // 脑后蓬松发量层
+            const backHair = new THREE.Mesh(new THREE.BoxGeometry(0.92, 0.6, 0.4), hairMat);
+            backHair.position.set(0, 0.15, -0.28);
+            hairGroup.add(backHair);
+
+            // 头顶发量层
+            const topHair = new THREE.Mesh(new THREE.BoxGeometry(0.92, 0.3, 0.84), hairMat);
+            topHair.position.set(0, 0.48, -0.02);
+            hairGroup.add(topHair);
+
+            // 左右鬓角发束
+            const sideHairL = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.5, 0.4), hairMat);
+            sideHairL.position.set(-0.46, 0.1, 0.1);
+            hairGroup.add(sideHairL);
+
+            const sideHairR = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.5, 0.4), hairMat);
+            sideHairR.position.set(0.46, 0.1, 0.1);
+            hairGroup.add(sideHairR);
+
+            // 前发额头立体碎刘海（错落有致，高精遮额效果）
+            for(let i = -3; i <= 3; i++) {
+                const fringeGeom = new THREE.BoxGeometry(0.14, 0.22, 0.15);
+                const fringe = new THREE.Mesh(fringeGeom, hairMat);
+                fringe.position.set(i * 0.11, 0.4, 0.41);
+                fringe.rotation.x = 0.2;
+                fringe.rotation.y = i * 0.05;
+                hairGroup.add(fringe);
+            }
+
+            // 呆毛 (Physics cowlick spring lock)
+            const cowlickGeom = new THREE.ConeGeometry(0.06, 0.3, 4);
+            const cowlick = new THREE.Mesh(cowlickGeom, hairMat);
+            cowlick.position.set(0, 0.68, -0.1);
+            cowlick.rotation.z = -0.3;
+            head.add(cowlick);
+
+            // 两侧招风小耳朵
+            const earGeom = new THREE.BoxGeometry(0.12, 0.2, 0.15);
+            const earL = new THREE.Mesh(earGeom, skinMat);
+            earL.position.set(-0.48, 0, -0.05);
+            head.add(earL);
+
+            const earR = new THREE.Mesh(earGeom, skinMat);
+            earR.position.set(0.48, 0, -0.05);
+            head.add(earR);
+
+
+            // 5. 肢体双关节：左手臂 (Shoulder -> Elbow -> Hand)
+            leftShoulder = new THREE.Group();
+            leftShoulder.position.set(-0.6, 1.1, 0); // 衣服左上角定位
+            torso.add(leftShoulder);
+
+            const upperArmL = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.09, 0.55, 16), skinMat);
+            upperArmL.position.y = -0.25;
+            leftShoulder.add(upperArmL);
+
+            // 蓝色短袖
+            const sleeveL = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.13, 0.3, 16), shirtMat);
+            sleeveL.position.y = -0.15;
+            leftShoulder.add(sleeveL);
+
+            leftElbow = new THREE.Group();
+            leftElbow.position.set(0, -0.5, 0); // 轴在小肘端
+            leftShoulder.add(leftElbow);
+
+            const foreArmL = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.07, 0.55, 16), skinMat);
+            foreArmL.position.y = -0.25;
+            leftElbow.add(foreArmL);
+
+            // 小巴掌
+            const handL = new THREE.Mesh(new THREE.SphereGeometry(0.09, 16, 16), skinMat);
+            handL.position.y = -0.55;
+            leftElbow.add(handL);
+
+
+            // 6. 肢体双关节：右手臂 (Shoulder -> Elbow -> Hand)
+            rightShoulder = new THREE.Group();
+            rightShoulder.position.set(0.6, 1.1, 0); // 衣服右上角定位
+            torso.add(rightShoulder);
+
+            const upperArmR = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.09, 0.55, 16), skinMat);
+            upperArmR.position.y = -0.25;
+            rightShoulder.add(upperArmR);
+
+            // 蓝色短袖
+            const sleeveR = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.13, 0.3, 16), shirtMat);
+            sleeveR.position.y = -0.15;
+            rightShoulder.add(sleeveR);
+
+            rightElbow = new THREE.Group();
+            rightElbow.position.set(0, -0.5, 0);
+            rightShoulder.add(rightElbow);
+
+            const foreArmR = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.07, 0.55, 16), skinMat);
+            foreArmR.position.y = -0.25;
+            rightElbow.add(foreArmR);
+
+            // 小巴掌
+            const handR = new THREE.Mesh(new THREE.SphereGeometry(0.09, 16, 16), skinMat);
+            handR.position.y = -0.55;
+            rightElbow.add(handR);
+
+
+            // 开启投影
+            hips.castShadow = true;
+            hips.receiveShadow = true;
+            leftLeg.castShadow = true;
+            rightLeg.castShadow = true;
+
+            // 监听窗口大小缩放
+            window.addEventListener('resize', onWindowResize, false);
+        }
+
+        function onWindowResize() {
+            const container = document.getElementById('webgl-canvas-container');
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        }
+
+        // --- 2. 3D 动态面部贴图绘制引擎 (Canvas-Based Facial Rig) ---
+        function drawFace() {
+            const ctx = dynamicContext;
+            ctx.clearRect(0, 0, 256, 256);
+
+            // 建立肤色底层
+            ctx.fillStyle = '#fecdb3';
+            ctx.fillRect(0, 0, 256, 256);
+
+            // 1. 绘制红扑扑的脸颊 (Blush)
+            ctx.fillStyle = 'rgba(252, 165, 165, 0.4)';
+            ctx.beginPath();
+            ctx.arc(60, 165, 20, 0, Math.PI * 2);
+            ctx.arc(196, 165, 20, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 2. 绘制精神小剑眉
+            ctx.strokeStyle = '#0f172a';
+            ctx.lineWidth = 6;
+            ctx.lineCap = 'round';
+            // 挑眉表情关联
+            let eyeYDiff = faceParams.mouthOpen * 4; 
+            ctx.beginPath();
+            ctx.quadraticCurveTo(60, 100 - eyeYDiff, 95, 105 - eyeYDiff); // 左眉
+            ctx.moveTo(161, 105 - eyeYDiff);
+            ctx.quadraticCurveTo(196, 100 - eyeYDiff, 196, 105 - eyeYDiff); // 右眉
+            ctx.stroke();
+
+            // 3. 绘制灵动眼睛
+            if (faceParams.eyesHappy) {
+                // 开心眯眼笑弯弯
+                ctx.strokeStyle = '#0f172a';
+                ctx.lineWidth = 8;
+                ctx.lineCap = 'round';
+                ctx.beginPath();
+                ctx.quadraticCurveTo(60, 105, 95, 130); // 左眼弧
+                ctx.moveTo(161, 130);
+                ctx.quadraticCurveTo(196, 105, 196, 130); // 右眼弧
+                ctx.stroke();
+            } else {
+                // 正常睁眼
+                // 眨眼重力折叠计算
+                let eyeH = 26 * (1 - faceParams.blink);
+                ctx.fillStyle = '#ffffff';
+                ctx.strokeStyle = '#0f172a';
+                ctx.lineWidth = 4;
+                
+                // 左眼白
+                ctx.beginPath();
+                ctx.ellipse(75, 130, 18, eyeH, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+
+                // 右眼白
+                ctx.beginPath();
+                ctx.ellipse(181, 130, 18, eyeH, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+
+                if (faceParams.blink < 0.85) {
+                    // 瞳孔渲染（含侧视漂移计算）
+                    ctx.fillStyle = '#1e293b';
+                    let px = faceParams.pupilOffsetX;
+                    let py = faceParams.pupilOffsetY;
+
+                    ctx.beginPath();
+                    ctx.ellipse(75 + px, 130 + py, 11, eyeH * 0.65, 0, 0, Math.PI * 2);
+                    ctx.ellipse(181 + px, 130 + py, 11, eyeH * 0.65, 0, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // 高光反光
+                    ctx.fillStyle = '#ffffff';
+                    ctx.beginPath();
+                    ctx.arc(71 + px, 122 + py, 5, 0, Math.PI * 2);
+                    ctx.arc(177 + px, 122 + py, 5, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            // 4. 高精口型发音系统 (High-Fidelity Talk Mouth)
+            ctx.fillStyle = '#991b1b'; // 口腔深红
+            ctx.strokeStyle = '#0f172a';
+            ctx.lineWidth = 4;
+
+            if (faceParams.mouthOpen < 0.05) {
+                // 闭嘴微笑
+                ctx.beginPath();
+                ctx.arc(128, 175, 20, 0.1 * Math.PI, 0.9 * Math.PI);
+                ctx.stroke();
+            } else {
+                // 张嘴说话，高度由 mouthOpen 决定
+                let opH = 30 * faceParams.mouthOpen;
+                ctx.beginPath();
+                ctx.ellipse(128, 180, 18, opH, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+
+                // 露出白色门牙
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(116, 180 - opH + 2, 24, 6);
+
+                // 露出粉色舌尖
+                ctx.fillStyle = '#f43f5e';
+                ctx.beginPath();
+                ctx.ellipse(128, 180 + opH - 4, 12, opH * 0.35, 0, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // 强制 Three.js 材质脏刷新
+            faceTexture.needsUpdate = true;
+        }
+
+        // --- 3. 3D 骨骼关节驱动器 (Skeletal Animation Frame Engine) ---
+        function animate() {
+            animationFrameId = requestAnimationFrame(animate);
+
+            const time = Date.now() * 0.001;
+
+            // 1. 物理微呼吸层 (Natural breathing body sway)
+            // 身体自然轻微起伏、头部轻微晃动
+            targetRotations.presenterY = -3.2 + Math.sin(time * 2) * 0.03;
+            targetRotations.torsoZ = Math.sin(time * 1.5) * 0.01;
+            targetRotations.neckX = Math.sin(time * 2) * 0.02;
+
+            // 2. 随机眨眼逻辑 (Random natural eye blinks)
+            if (Math.random() > 0.985 && faceParams.blink === 0) {
+                faceParams.blink = 1; // 触发迅速闭眼
+            }
+            if (faceParams.blink > 0) {
+                faceParams.blink -= 0.15; // 平滑睁开
+                if (faceParams.blink < 0) faceParams.blink = 0;
+            }
+
+            // 3. 3D 骨骼逼真插值平滑 Lerp 算法（拒绝跳变，宛若真人关节质感）
+            const lerpSpeed = 0.12;
+            for (let key in currentRotations) {
+                currentRotations[key] += (targetRotations[key] - currentRotations[key]) * lerpSpeed;
+            }
+
+            // 4. 将计算后的真实旋转矩阵绑定到 Three.js 关节节点
+            presenterGroup.position.y = currentRotations.presenterY;
+            
+            // 鞠躬旋转点在胯
+            hips.rotation.x = currentRotations.torsoX;
+            hips.rotation.y = currentRotations.torsoY;
+            hips.rotation.z = currentRotations.torsoZ;
+
+            neck.rotation.x = currentRotations.neckX;
+            neck.rotation.y = currentRotations.neckY;
+            neck.rotation.z = currentRotations.neckZ;
+
+            head.rotation.x = currentRotations.headX;
+            head.rotation.y = currentRotations.headY;
+            head.rotation.z = currentRotations.headZ;
+
+            leftShoulder.rotation.x = currentRotations.lShoulderX;
+            leftShoulder.rotation.y = currentRotations.lShoulderY;
+            leftShoulder.rotation.z = currentRotations.lShoulderZ;
+            leftElbow.rotation.x = currentRotations.lElbowX;
+
+            rightShoulder.rotation.x = currentRotations.rShoulderX;
+            rightShoulder.rotation.y = currentRotations.rShoulderY;
+            rightShoulder.rotation.z = currentRotations.rShoulderZ;
+            rightElbow.rotation.x = currentRotations.rElbowX;
+
+            // 5. 动态人脸贴图刷新
+            drawFace();
+
+            // 6. 渲染场景
+            renderer.render(scene, camera);
+        }
+
+        // --- 4. 演讲姿态动作数据库 (Speech Gestures Action Matrix) ---
+        function apply3DGesture(gesture, expression) {
+            // 清空所有目标动作寄存器为默认演讲站立预备姿态
+            targetRotations.torsoX = 0;
+            targetRotations.neckX = 0;
+            targetRotations.headX = 0;
+            targetRotations.headY = 0;
+            targetRotations.lShoulderX = 0; targetRotations.lShoulderY = 0; targetRotations.lShoulderZ = 0.15;
+            targetRotations.lElbowX = -0.3;
+            targetRotations.rShoulderX = 0; targetRotations.rShoulderY = 0; targetRotations.rShoulderZ = -0.15;
+            targetRotations.rElbowX = 0.3;
+
+            faceParams.eyesHappy = (expression === 'happy');
+            faceParams.pupilOffsetX = 0;
+            faceParams.pupilOffsetY = 0;
+
+            switch (gesture) {
+                case 'wave': // 1. 快乐挥手致意
+                    targetRotations.lShoulderX = -0.8;
+                    targetRotations.lShoulderZ = -0.6;
+                    targetRotations.lElbowX = -1.2;
+                    // 挥手动作摆幅在 animate 循环中根据时间微调
+                    break;
+
+                case 'welcome': // 2. 大方开阔，双臂外展迎接
+                    targetRotations.lShoulderX = -0.4;
+                    targetRotations.lShoulderZ = -0.8;
+                    targetRotations.lElbowX = -0.3;
+
+                    targetRotations.rShoulderX = -0.4;
+                    targetRotations.rShoulderZ = 0.8;
+                    targetRotations.rElbowX = 0.3;
+                    break;
+
+                case 'circle': // 3. 胸前画大圆象征地球
+                    targetRotations.lShoulderX = -0.8;
+                    targetRotations.lShoulderZ = -0.4;
+                    targetRotations.lElbowX = -1.0;
+
+                    targetRotations.rShoulderX = -0.8;
+                    targetRotations.rShoulderZ = 0.4;
+                    targetRotations.rElbowX = 1.0;
+                    break;
+
+                case 'point': // 4. 手指侧看大投影屏幕，眼神侧视跟踪！
+                    targetRotations.rShoulderX = -1.6; // 右臂向前抬直
+                    targetRotations.rShoulderY = 0.3;
+                    targetRotations.rShoulderZ = -0.3;
+                    targetRotations.rElbowX = 0.1;
+
+                    targetRotations.headY = 0.28; // 偏头看右侧
+                    faceParams.pupilOffsetX = 12; // 眼神机智向右瞟
+                    faceParams.pupilOffsetY = -3;
+                    break;
+
+                case 'love': // 5. 歪头双手捧心贴胸口
+                    targetRotations.lShoulderX = -0.3;
+                    targetRotations.lShoulderZ = -0.2;
+                    targetRotations.lElbowX = -1.5; // 大屈肘
+
+                    targetRotations.rShoulderX = -0.3;
+                    targetRotations.rShoulderZ = 0.2;
+                    targetRotations.rElbowX = 1.5;
+
+                    targetRotations.headZ = -0.15; // 歪歪头
+                    break;
+
+                case 'bow': // 6. 九十度大鞠躬：上躯干弯曲，头部深度俯低，双臂顺重力摆下
+                    targetRotations.torsoX = 0.55; // 胯部旋转 (弯腰)
+                    targetRotations.neckX = 0.25;  // 脖子低俯
+                    targetRotations.headX = 0.3;   // 头面完全向下
+
+                    // 胳膊受引力作用自然垂下
+                    targetRotations.lShoulderX = 0.2;
+                    targetRotations.lShoulderZ = 0.1;
+                    targetRotations.lElbowX = -0.2;
+
+                    targetRotations.rShoulderX = -0.2;
+                    targetRotations.rShoulderZ = -0.1;
+                    targetRotations.rElbowX = 0.2;
+                    break;
+            }
+        }
+
+        // --- 5. 自动演讲及幻灯片联动控制中心 ---
+        function toggleAutoShow() {
+            if (isPlaying) {
+                stopSpeech();
+            } else {
+                startSpeech();
+            }
+        }
+
+        function startSpeech() {
+            isPlaying = true;
+            document.getElementById('play-btn-text').textContent = "暂停AI演播";
+            document.getElementById('play-btn-icon').innerHTML = '<rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect>';
+            document.getElementById('main-play-btn').classList.add('playing');
+            
+            deliverCurrentSlide();
+        }
+
+        function stopSpeech() {
+            isPlaying = false;
+            document.getElementById('play-btn-text').textContent = "开启全程自动演讲";
+            document.getElementById('play-btn-icon').innerHTML = '<polygon points="5 3 19 12 5 21 5 3"></polygon>';
+            document.getElementById('main-play-btn').classList.remove('playing');
+            
+            if (synth) {
+                synth.cancel();
+            }
+            faceParams.mouthOpen = 0;
+            apply3DGesture('default', 'normal');
+        }
+
+        function deliverCurrentSlide() {
+            if (!isPlaying) return;
+
+            const slide = slides[currentSlide];
+            const gesture = slide.getAttribute('data-gesture');
+            const expression = slide.getAttribute('data-expression');
+            const textToSpeak = speechSubtitles[currentSlide].en;
+
+            subEn.textContent = speechSubtitles[currentSlide].en;
+            subCn.textContent = speechSubtitles[currentSlide].cn;
+
+            // 驱动 3D 角色动作与五官
+            apply3DGesture(gesture, expression);
+
+            // 如果处于挥手状态，加入高频律动摆动目标角度
+            let waveInterval = null;
+            if (gesture === 'wave') {
+                let angleSign = 1;
+                waveInterval = setInterval(() => {
+                    if (currentSlide !== 0 || !isPlaying) {
+                        clearInterval(waveInterval);
+                        return;
+                    }
+                    targetRotations.lElbowX = -1.2 + (angleSign * 0.4);
+                    angleSign *= -1;
+                }, 180);
+            }
+
+            if (synth) {
+                synth.cancel();
+                
+                speechUtterance = new SpeechSynthesisUtterance(textToSpeak);
+                speechUtterance.lang = 'en-US';
+
+                const voices = synth.getVoices();
+                let preferredVoice = voices.find(v => 
+                    v.name.includes('Kevin') || v.name.includes('Justin') || v.name.includes('Ana')
+                );
+
+                if (!preferredVoice) {
+                    preferredVoice = voices.find(v => v.name.includes('Google US English') && !v.name.includes('Male')) ||
+                                     voices.find(v => v.name.includes('Samantha') || v.name.includes('Aria') || v.name.includes('Zira'));
+                }
+
+                if (preferredVoice) {
+                    speechUtterance.voice = preferredVoice;
+                }
+
+                speechUtterance.rate = 0.85;  
+                speechUtterance.pitch = 0.88; 
+
+                // 拟真说话口型同步嘴唇大开张 (Real Lip-Sync engine)
+                let lipSyncTimer = null;
+                speechUtterance.onstart = () => {
+                    lipSyncTimer = setInterval(() => {
+                        // 产生自然的嘴部开合度，正弦波夹杂随机因子
+                        faceParams.mouthOpen = 0.3 + Math.sin(Date.now() * 0.02) * 0.5 + Math.random() * 0.2;
+                        if (faceParams.mouthOpen < 0) faceParams.mouthOpen = 0;
+                    }, 80);
+                };
+
+                speechUtterance.onend = () => {
+                    if (lipSyncTimer) clearInterval(lipSyncTimer);
+                    if (waveInterval) clearInterval(waveInterval);
+                    faceParams.mouthOpen = 0; // 说话结束闭嘴
+                    
+                    if (isPlaying) {
+                        if (currentSlide === totalSlides - 1) {
+                            // 终章谢幕躬身鞠躬致意
+                            apply3DGesture('bow', 'happy');
+                            setTimeout(() => {
+                                stopSpeech();
+                            }, 3500);
+                        } else {
+                            // 留一秒舞台吸气静候，随后切页
+                            setTimeout(() => {
+                                if (isPlaying) {
+                                    nextSlide();
+                                    deliverCurrentSlide();
+                                }
+                            }, 1500);
+                        }
+                    }
+                };
+
+                speechUtterance.onerror = () => {
+                    if (lipSyncTimer) clearInterval(lipSyncTimer);
+                    faceParams.mouthOpen = 0;
+                };
+
+                synth.speak(speechUtterance);
+            }
+        }
+
+        // 幻灯片渲染及背景环境灯光联动
+        function updateSlide() {
+            slides.forEach((slide, idx) => {
+                if (idx === currentSlide) {
+                    slide.classList.add('active');
+                } else {
+                    slide.classList.remove('active');
+                }
+            });
+
+            const activeSlide = slides[currentSlide];
+            const theme = activeSlide.getAttribute('data-theme');
+            
+            // 全场景环境灯光渲染
+            if (theme === 'night') {
+                presentation.style.backgroundColor = '#05041a';
+                presentation.style.border = '10px solid #111029';
+                document.body.style.background = '#020210';
+            } else if (theme === 'seas-land') {
+                presentation.style.backgroundColor = '#ecfdf5';
+                presentation.style.border = '10px solid #10b981';
+                document.body.style.background = 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)';
+            } else {
+                presentation.style.backgroundColor = '#ffffff';
+                presentation.style.border = '10px solid #4b5563';
+                document.body.style.background = '#02020d';
+            }
+
+            if (!isPlaying) {
+                subEn.textContent = speechSubtitles[currentSlide].en;
+                subCn.textContent = speechSubtitles[currentSlide].cn;
+                
+                // 手动切页时让 Sunny 摆出对应的 3D 姿态
+                const gesture = activeSlide.getAttribute('data-gesture');
+                const expression = activeSlide.getAttribute('data-expression');
+                apply3DGesture(gesture, expression);
+            }
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++;
+            } else {
+                currentSlide = 0; 
+            }
+            updateSlide();
+            if (isPlaying) {
+                deliverCurrentSlide();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+            } else {
+                currentSlide = totalSlides - 1;
+            }
+            updateSlide();
+            if (isPlaying) {
+                deliverCurrentSlide();
+            }
+        }
+
+        function repeatCurrent() {
+            const tempState = isPlaying;
+            stopSpeech();
+            isPlaying = true;
+            deliverCurrentSlide();
+            isPlaying = tempState; 
+        }
+
+        function toggleSubtitles() {
+            const toggle = document.getElementById('subtitle-toggle');
+            const panel = document.getElementById('subtitle-panel');
+            if (toggle.checked) {
+                panel.style.opacity = '1';
+                panel.style.pointerEvents = 'auto';
+            } else {
+                panel.style.opacity = '0';
+                panel.style.pointerEvents = 'none';
+            }
+        }
+
+        // 键盘翻页支持
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') {
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                prevSlide();
+            } else if (e.key === ' ') {
+                toggleAutoShow();
+                e.preventDefault(); 
+            }
+        });
+
+        // 3D 画布拖拽、鼠标滑过视角微晃交互逻辑
+        let isDragging = false;
+        let previousMousePosition = { x: 0, y: 0 };
+        const canvasContainer = document.getElementById('webgl-canvas-container');
+
+        canvasContainer.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            previousMousePosition = { x: e.clientX, y: e.clientY };
+        });
+
+        canvasContainer.addEventListener('mousemove', (e) => {
+            const deltaMove = {
+                x: e.clientX - previousMousePosition.x,
+                y: e.clientY - previousMousePosition.y
+            };
+
+            if (isDragging) {
+                // 拖拽旋转 3D 角色摄像机视角
+                presenterGroup.rotation.y += deltaMove.x * 0.007;
+                previousMousePosition = { x: e.clientX, y: e.clientY };
+            } else {
+                // 鼠标滑动时，小男孩眼神和头部产生极其自然的“追光跟踪”效果
+                let bounds = canvasContainer.getBoundingClientRect();
+                let mx = ((e.clientX - bounds.left) / bounds.width) * 2 - 1;
+                let my = -((e.clientY - bounds.top) / bounds.height) * 2 + 1;
+                
+                // 只有在非特写指向时，才微调眼神，防止穿帮
+                const currentGesture = slides[currentSlide].getAttribute('data-gesture');
+                if (currentGesture !== 'point') {
+                    targetRotations.headY = mx * 0.25;
+                    targetRotations.headX = -my * 0.15;
+                    faceParams.pupilOffsetX = mx * 8;
+                    faceParams.pupilOffsetY = -my * 5;
+                }
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+
+        // 双击 3D 画面，还原角色摄像机视角
+        canvasContainer.addEventListener('dblclick', () => {
+            presenterGroup.rotation.set(0, 0, 0);
+            targetRotations.headY = 0;
+            targetRotations.headX = 0;
+        });
+
+        // 初始化舞台
+        init3D();
+        animate();
+        updateSlide();
+    </script>
+</body>
+</html>

@@ -1,0 +1,366 @@
+        Frame
+        ==========================================
+        -------Frame parameter--------
+            arrival_time
+            frame_number
+            frame_length
+            protocols_in_frame
+            capture_length
+
+        -------Protocols---------------
+            ethernet
+                - source
+                - destination
+                - type (IP, VLAN)
+               [- vlan_priority] (Optional)
+               [- vlan_cfi] (Optional)
+               [- vlan_id] (Optional)
+               
+            ethernet.vlan
+                - priority
+                - cfi
+                - id
+                - type (LLC, IP, ARP)
+
+            ethernet.vlan.ip
+                - support all parameters under ethernet.ip
+
+            ethernet.vlan.arp
+                - support all parameters under ethernet.arp
+
+            ethernet.arp
+               - hardware_type
+               - protocol_type
+               - hardware_size
+               - protocol_size
+               - opcode
+               - sender_mac_address
+               - sender_ip_address
+               - target_mac_address
+               - target_ip_address
+	    ethernet.slow
+		- {items}
+
+                  e.g.  ethernet.slow.Slow Protocols subtype = 0x03
+                        ethernet.slow.Flags = 0008
+                        ethernet.slow.Flags.Link Fault = False
+                        ethernet.slow.Flags.Dying Gasp = False
+                        ethernet.slow.Flags.Critical Event = False
+                        ethernet.slow.Flags.Local Evaluating = True
+                        ethernet.slow.Flags.Local Stable = False
+                        ethernet.slow.Flags.Remote Evaluating = False
+                        ethernet.slow.Flags.Remote Stable = False
+                        ethernet.slow.OAMPDU code = 0x00
+                        ethernet.slow.Type = 0x01
+                        ethernet.slow.Type.TLV Length = 16
+                        ethernet.slow.Type.TLV Version = 0x01
+                        ethernet.slow.Type.TLV Revision = 0
+                        ethernet.slow.Type.OAM DTE States = 0x00
+                        ethernet.slow.Type.OAM DTE States.Parser Action = 0x00
+                        ethernet.slow.Type.OAM DTE States.Muxiplexer Action = Forward non-OAMPDUs to lower sublayer
+                        ethernet.slow.Type.OAM Configuration = 0x0d
+                        ethernet.slow.Type.OAM Configuration.OAM Mode = DTE configured in Active mode
+                        ethernet.slow.Type.OAM Configuration.Unidirectional support = DTE is not capable of sending OAMPDUs when rcv path is down
+                        ethernet.slow.Type.OAM Configuration.Loopback support = DTE is capable of OAM remote loopback mode
+                        ethernet.slow.Type.OAM Configuration.Link Events support = DTE supports interpreting Link Events
+                        ethernet.slow.Type.OAM Configuration.Variable Retrieval = DTE does not support sending Variable Response
+                        ethernet.slow.Type.Max OAMPDU Size = 1500
+                        ethernet.slow.Type.Organizationally Unique Identifier = 00000c (Cisco)
+                        ethernet.slow.Type.Vendor Specific Information = 00000002
+
+            ethernet.ip
+                - version
+                - header_length
+                - dscp
+                - total_length
+                - identification
+                - flags
+		- more_fragments = not set
+		- reserved_bit = not set
+		- donot_fragment = not set
+                - fragment_offset
+                - time_to_live
+                - protocol
+                - header_checksum
+                - source
+                - destination
+
+            ethernet.ip.esp
+                - spi
+                - sequence
+                [- pad_length] (Optional)
+                [- next_header] (Optional)
+                [- ip (support all parameters under ethernet.ip)] (Optional)
+
+            ethernet.ip.ospf
+                - {items}
+                    e.g.   ethernet.ip.ospf.OSPF Header.OSPF Version = 2
+                            ethernet.ip.ospf.Packet Checksum = correct
+                            ethernet.ip.ospf.Area ID = 0.0.0.0
+                            ethernet.ip.ospf.OSPF Hello Packet.Options = 0x02
+
+            ethernet.ip.icmp
+                - type
+                - code
+                - checksum
+                - identifier
+                - sequence_number
+                - pointer
+                - ip (support all parameters under ethernet.ip)
+                - data
+
+            ethernet.ip.icmp.ip.udp.bfd
+                - {items}
+                    e.g.    ethernet.ip.icmp.ip.udp.bfd.Session State = 0x01
+                            ethernet.ip.icmp.ip.udp.bfd.Message Flags.Control Plane Independent = Not set
+                            ethernet.ip.icmp.ip.udp.bfd.Message Length = 24 bytes
+
+            ethernet.ip.udp
+                - source_port
+                - destination_port
+                - length
+                - checksum
+
+            ethernet.ip.udp.gtp
+                - flags
+                - message_type
+                - length
+                - teid
+                - sequence_number
+                - npdu_number
+                - data(raw)
+
+            ethernet.ip.gtp.ipv6
+                   - version
+                   - payload_length
+                   - next_header
+                   - hop_limit
+                   - source
+                   - destination
+                   - traffic_class
+                   - ect
+                   - dsf
+                   - ecn_ce
+                   - flowlabel     
+
+            ethernet.ip.udp.dhcp
+                - operation
+                - hw_type
+                - hw_length
+                - hops
+                - transaction_id
+                - seconds_elapsed
+                - flags
+                - client_ip
+                - your_ip
+                - next_server_ip
+                - relay_agent_ip
+                - client_mac
+                - server_name
+                - boot_file_name
+                - options (dict) = {'53': CDhcpOption(option = '53', length = '1', value = '02'), ....}
+
+            ethernet.ip.udp.dns
+                - transaction_id
+                - flags
+                - questions
+                - answer_rrs
+                - authority_rrs
+                - additional_rrs
+                - question (if existed)
+                    - name
+                    - type
+                    - class_id
+                - answer (if existed)
+                    - name
+                    - type
+                    - class_id
+                    - time_to_live
+                    - data_length
+                    - addr
+                - authority (if existed)
+                    - name
+                    - type
+                    - class_id
+                    - time_to_live
+                    - data_length
+                    - addr
+                - additional (if existed)
+                    - ?(no example)
+
+            ethernet.ip.udp.ntp
+                - {items}
+                    e.g.   ethernet.ip.udp.ntp.Flags = 0xe3
+                            ethernet.ip.udp.ntp.Peer Polling Interval = 6
+                            ethernet.ip.udp.ntp.Flags.Mode = 3
+
+            ethernet.ip.udp.bfd
+                - {items}
+                    e.g.   ethernet.ip.udp.bfd.Session State = 0x01
+                            ethernet.ip.udp.bfd.Message Flags.Control Plane Independent = Not set
+                            ethernet.ip.udp.bfd.Message Length = 24 bytes
+
+            ethernet.ip.udp.isakmp
+                - {items}
+                    e.g.   ethernet.ip.udp.isakmp.Exchange type = 34
+                            ethernet.ip.udp.isakmp.Security Association payload.Payload length = 88
+
+            ethernet.ip.udp.twamp
+               - {items}
+    
+                    e.g.   ethernet.ip.udp.twamp.Sequence number @ Sender = 4
+                            ethernet.ip.udp.twamp.Transmit Timestamp @ Sender = Jan  1, 1970 00:00:00.000000000 UTC
+                            ethernet.ip.udp.twamp.Integer part of seconds = 0
+                            ethernet.ip.udp.twamp.Error Estimate S bit = 0
+ 
+            ethernet.ip.udp.echo
+                       - data
+                            e.g.    ethernet.ip.udp.echo.data = 2
+                            
+            ethernet.ip.tcp
+                - source_port
+                - destination_port
+                - sequence_number
+                - acknowledgement_number
+                - header_length
+                - flags
+                - window_size
+                - checksum
+
+            ethernet.ip.tcp.om[n]
+                - {items}
+                    e.g.  ethernet.ip.tcp.om.fileTransferProtocol.https = True
+                            ethernet.ip.tcp.om.alarmInformation.alarmNumber = 30289
+                            ethernet.ip.tcp.om[1].fileTransferProtocol.https = True
+                            ethernet.ip.tcp.om[1].alarmInformation.alarmNumber = 30289
+
+            ethernet.ip.tcp.giop
+                - {items}
+                    e.g.    ethernet.ip.tcp.giop.Version = 1.2
+                            ethernet.ip.tcp.giop.Reply status = 0
+                            ethernet.ip.tcp.giop.ServiceContextList.Sequence Length = 0
+
+            ethernet.ip.tcp.nsnti
+                - {items}
+                    e.g.    ethernet.ip.tcp.nsnti.MsgReport SynchId = 0x0a0b0c0d
+                            ethernet.ip.tcp.nsnti.MsgReport MsgInfo.MsgReport MsgInfo Addon SeqNum = 1
+
+            ethernet.ip.tcp.ssl
+                - {items}
+                    e.g.    ethernet.ip.tcp.ssl.SSL Record Layer.Content Type = 2
+                            ethernet.ip.tcp.ssl.TLSv1 Record Layer.Content Type = 23
+                            ethernet.ip.tcp.ssl.SSL Record Layer.Handshake Protocol.Compression Methods Length = 1
+
+            ethernet.ip.tcp.cmp
+                - {items}
+                    e.g.
+                            ethernet.ip.tcp.cmp.header.owf (SHA-1).Algorithm Id = 1.3.14.3.2.26
+                            ethernet.ip.tcp.cmp.body.publicKey.Algorithm Id = 1.2.840.113549.1.1.1
+
+
+            ethernet.ip.tcp.ssh
+                - version
+    
+                    e.g.    ethernet.ip.tcp.ssh.version = 2
+                    
+            ethernet.ip.tcp.http
+                - host
+                - request_method
+                - request_version
+                - content_length
+                - connection
+                - cache_control
+
+            ethernet.ip.tcp.http.cmp
+                - {items}
+                    e.g.
+                            ethernet.ip.tcp.http.cmp.header.owf (SHA-1).Algorithm Id = 1.3.14.3.2.26
+                            ethernet.ip.tcp.http.cmp.body.publicKey.Algorithm Id = 1.2.840.113549.1.1.1
+
+            ethernet.ip.sctp
+                - source_port
+                - destination_port
+                - verification_tag
+                - checksum
+                - <thunk name>  **
+                    - chunk_type
+                    - chunk_flag
+                    - chunk_length
+                    - payload_protocol_identifier(if existed)
+                    - chunk_parameters(if existed)
+                        - type_value
+                        - type
+                        - length
+                        - value
+                - s1ap (if existed)
+                - x2ap (if existed)
+
+                    ** Note:
+                    =============
+                    <thunk name>:
+                        -> data
+                        -> init
+                        -> init_ack
+                        -> sack
+                        -> heartbeat
+                        -> heartbeat_ack
+                        -> abort
+                        -> shutdown
+                        -> shutdown_ack
+                        -> error
+                        -> cookie_echo
+                        -> cookie_ack
+                        -> ecne
+                        -> cwr
+                        -> shutdown_complete
+                
+            ethernet.ip.sctp.s1ap
+                - s1ap_pdu
+                - procedure_code
+                - criticality
+                - value
+                - protocol_ie
+                - items: {IeName1: {Key11, value11, Key12: Value12, ....},
+                                IeName2: {Key21, value21, Key22: Value22, ....},
+                                IeName2: {Key31, value31, Key32: Value32, ....},
+                                ...}
+
+            ethernet.ip.sctp.x2ap
+                - x2ap_pdu
+                - procedure_code
+                - criticality
+                - value
+                - protocol_ie
+                - items: {IeName1: {Key11, value11, Key12: Value12, ....},
+                                IeName2: {Key21, value21, Key22: Value22, ....},
+                                IeName2: {Key31, value31, Key32: Value32, ....},
+                                ...}
+
+            ethernet.ipv6
+                   - version
+                   - payload_length
+                   - next_header
+                   - hop_limit
+                   - source
+                   - destination
+                   - traffic_class
+                   - ect
+                   - dsf
+                   - ecn_ce
+                   - flowlabel
+
+            ethernet.ipv6.icmpv6
+                - type
+                - code
+                - checksum -- 0xd49c
+                - checksum_flag -- (correct)
+                - identifier
+                - sequence_number
+                - pointer
+                - ip (support all parameters under ethernet.ip)
+                - data
+
+        ===================================================
+        Be notice that not all the protocols can be parsed and debugging msg will be printed if unsupported protocols met.
+        This is the first version for wireshark log analyze which may contains defects,
+            please contact TA CORE team if you met any problems

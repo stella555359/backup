@@ -1,0 +1,11 @@
+#!/bin/sh
+./T284_MTU-008-UE1.sh &
+./T284_MTU-008-UE2.sh &
+./T284_MTU-008-UE3.sh &
+./T284_MTU-008-UE4.sh &
+./T284_MTU-008-UE5.sh &
+./T284_MTU-008-UE6.sh &
+./T284_MTU-008-UE7.sh &
+./T284_MTU-008-UE8.sh
+
+

@@ -1,0 +1,13 @@
+:root {
+  --md-primary-fg-color:        rgb(18, 65, 145);
+  --md-primary-fg-color--light: rgb(18, 65, 145);
+  --md-primary-fg-color--dark:  rgb(0, 17, 53);
+}
+
+.md-header__button.md-logo img, .md-header__button.md-logo svg {
+    width: 4.2rem;
+}
+
+.md-typeset a, .md-nav__item .md-nav__link--active {
+    color: rgb(120 162 232);
+}

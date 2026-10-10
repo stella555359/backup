@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<!-- saved from url=(0108)https://taf.wrgitlab-pages.int.net.nokia.com/miscellaneous/taf-user-guide/package_installation/#installation -->
+<html class="js-focus-visible js" lang="en" data-js-focus-visible=""><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta content="width=device-width,initial-scale=1" name="viewport">
+<link href="https://taf.wrgitlab-pages.int.net.nokia.com/miscellaneous/taf-user-guide/package_installation/" rel="canonical">
+<link href="https://taf.wrgitlab-pages.int.net.nokia.com/miscellaneous/taf-user-guide/" rel="prev">
+<link href="https://taf.wrgitlab-pages.int.net.nokia.com/miscellaneous/taf-user-guide/rf_writeup/" rel="next">
+<link href="https://taf.wrgitlab-pages.int.net.nokia.com/miscellaneous/taf-user-guide/images/favicon.png" rel="icon">
+<meta content="mkdocs-1.6.1, mkdocs-material-9.5.50" name="generator">
+<title>How to install a TAF package - TAF User Guide</title>
+<link href="./How to install a TAF package - TAF User Guide_files/main.a40c8224.min.css" rel="stylesheet">
+<link href="./How to install a TAF package - TAF User Guide_files/palette.06af60db.min.css" rel="stylesheet">
+<link crossorigin="" href="https://fonts.gstatic.com/" rel="preconnect">
+<link href="./How to install a TAF package - TAF User Guide_files/css" rel="stylesheet">
+<style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+<link href="./How to install a TAF package - TAF User Guide_files/extra.css" rel="stylesheet">
+<link href="./How to install a TAF package - TAF User Guide_files/ute_styles.css" rel="stylesheet">
+<script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+<meta name="theme-color" content="#ffffff"><meta name="color-scheme" content="light"></head>
+<body data-md-color-accent="indigo" data-md-color-primary="indigo" data-md-color-scheme="default" dir="ltr" data-md-color-media="">
+<input autocomplete="off" class="md-toggle" data-md-toggle="drawer" id="__drawer" type="checkbox">
+<input autocomplete="off" class="md-toggle" data-md-toggle="search" id="__search" type="checkbox">
+<label class="md-overlay" for="__drawer"></label>
+<div data-md-component="skip">
+<a class="md-skip" href="https://taf.wrgitlab-pages.int.net.nokia.com/miscellaneous/taf-user-guide/package_installation/#taf-package-installation">
+          Skip to content
+        </a>
+</div>
+<div data-md-component="announce">
+</div>
+<header class="md-header" data-md-component="header" hidden="">
+<nav class="navbar md-grid" data-theme="navbar" id="navbar">
+<div class="leftPanel">
+<label class="md-header__button md-icon" for="__drawer">
+<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"></path></svg>
+</label>
+<a class="link" href="https://nokia.sharepoint.com/sites/ute-cloud/SitePages/Home.aspx" target="_blank">
+<span aria-label="UTE Logo" class="logo" role="img">
+<svg fill="none" height="38" viewBox="0 0 34 38" width="34" xmlns="http://www.w3.org/2000/svg">
+<path d="M0 8.54264L10.1023 2.65117L11.9544 3.73126L18.3525 0L33.6743 8.54264V28.1809L16.8371 38L0 28.1809V8.54264Z" fill="white"></path>
+<path d="M0 28.1808L16.8371 18.3617L33.6743 28.1808L16.8371 37.9999L0 28.1808Z" fill="#EF6AE0" fill-opacity="0.698039"></path>
+<path d="M23.572 14.4341L8.41858 5.79328L18.3525 0L33.6743 8.54264L23.572 14.4341Z" fill="url(#paint0_linear_56_257)"></path>
+<path d="M8.41858 5.79333V25.2352L21.8883 27.199L23.572 24.2533V14.4342L8.41858 5.79333Z" fill="url(#paint1_linear_56_257)"></path>
+<path d="M16.8373 38L33.6744 28.1808V8.5426L25.2559 13.4522V25.2351L16.8373 30.1447V38Z" fill="url(#paint2_linear_56_257)"></path>
+<path d="M10.1023 2.65112L0 8.54254L8.41856 13.4521L11.786 11.4883L16.8371 14.4341L23.572 10.5064L18.5209 7.56069L10.1023 2.65112Z" fill="#0021F0" fill-opacity="0.6"></path>
+<path d="M0 8.5426V28.1808L16.8371 38V30.1447L8.41857 25.2351V13.4522L0 8.5426Z" fill="url(#paint3_linear_56_257)"></path>
+<path d="M16.8373 26.217V14.434L11.7861 11.4883L10.1024 12.4702V24.2531L16.8373 26.217Z" fill="url(#paint4_linear_56_257)"></path>
+<path d="M16.8373 26.2172L23.5721 22.2895V10.5066L16.8373 14.4342V26.2172Z" fill="url(#paint5_linear_56_257)"></path>
+<path d="M8.41858 11.4885V25.2353L16.8372 30.1448L25.2557 25.2353V11.4885L23.572 10.5066L21.8883 11.4885V23.2715L16.8372 26.2172L11.786 23.2715V13.4523V11.4885L10.1023 10.5066L8.41858 11.4885Z" fill="#FBFBFB"></path>
+<path d="M21.8883 23.2712V11.4883L23.572 12.4702V24.2531L21.8883 23.2712Z" fill="#DCDCDC" fill-opacity="0.6"></path>
+<path d="M8.41858 11.4885L10.1023 12.4704L11.786 11.4885L10.1023 10.5066L8.41858 11.4885Z" fill="#ECECEC"></path>
+<path d="M21.8883 11.4885L23.572 12.4704L25.2557 11.4885L23.572 10.5066L21.8883 11.4885Z" fill="#E8E8E8"></path>
+<defs>
+<lineargradient gradientUnits="userSpaceOnUse" id="paint0_linear_56_257" x1="21.7308" x2="33.6783" y1="4.5055" y2="6.05689">
+<stop stop-color="#00BFE1"></stop>
+<stop offset="1" stop-color="#66E7FF"></stop>
+</lineargradient>
+<lineargradient gradientUnits="userSpaceOnUse" id="paint1_linear_56_257" x1="20.8363" x2="18.0604" y1="7.56467" y2="25.0946">
+<stop stop-color="#00BADC" stop-opacity="0.999398"></stop>
+<stop offset="1" stop-color="#ED5BDD" stop-opacity="0.756695"></stop>
+</lineargradient>
+<lineargradient gradientUnits="userSpaceOnUse" id="paint2_linear_56_257" x1="21.0876" x2="32.2682" y1="32.0337" y2="20.6211">
+<stop stop-color="#8B0052" stop-opacity="0.698039"></stop>
+<stop offset="1" stop-color="#00D2F8" stop-opacity="0.7"></stop>
+</lineargradient>
+<lineargradient gradientUnits="userSpaceOnUse" id="paint3_linear_56_257" x1="14.7034" x2="3.51605" y1="33.5872" y2="14.6317">
+<stop stop-color="#A60062" stop-opacity="0.698039"></stop>
+<stop offset="1" stop-color="#0021F0" stop-opacity="0.8"></stop>
+</lineargradient>
+<lineargradient gradientUnits="userSpaceOnUse" id="paint4_linear_56_257" x1="14.4699" x2="16.8846" y1="11.8358" y2="30.5644">
+<stop stop-color="#4B3AC5" stop-opacity="0.998235"></stop>
+<stop offset="1" stop-color="#4B3AC5" stop-opacity="0"></stop>
+</lineargradient>
+<lineargradient gradientUnits="userSpaceOnUse" id="paint5_linear_56_257" x1="19.5591" x2="20.6153" y1="27.5332" y2="14.6957">
+<stop stop-color="#0FAFFF"></stop>
+<stop offset="1" stop-color="#0FAFFF" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+</svg>
+</span>
+</a>
+<a class="link" href="https://taf.wrgitlab-pages.int.net.nokia.com/miscellaneous/taf-user-guide/">
+<span class="title" id="title">TAF User Guide</span>
+</a>
+<div class="links">
+<a class="link" href="https://nokia.sharepoint.com/sites/ute-cloud/SitePages/Home.aspx" id="aboutLink" target="_blank">About UTE</a>
+</div>
+</div>
+<div class="rightPanel">
+<form class="md-header__option" data-md-component="palette">
+<input aria-label="Switch to dark mode" class="md-option" data-md-color-accent="indigo" data-md-color-media="" data-md-color-primary="indigo" data-md-color-scheme="default" id="__palette_0" name="__palette" type="radio">
+<label class="md-header__button md-icon" for="__palette_1" title="Switch to dark mode">
+<svg fill="none" height="24" viewBox="0 0 25 24" width="25" xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd" d="M11.6031 2.76105C6.72719 3.0015 2.81006 7.0672 2.81006 11.9998C2.81006 17.0856 6.97427 21.2498 12.0601 21.2498C14.0909 21.2498 15.9571 20.565 17.4764 19.4568C12.8876 18.2542 9.51006 14.0227 9.51006 9.0998C9.51006 6.75106 10.2836 4.54361 11.6031 2.76105ZM1.31006 11.9998C1.31006 6.08559 6.14584 1.2498 12.0601 1.2498C12.1214 1.2498 12.1825 1.25732 12.242 1.27219C12.5402 1.34677 12.8523 1.3498 13.1601 1.3498C13.4634 1.3498 13.7369 1.53253 13.853 1.81279C13.9691 2.09304 13.9049 2.41563 13.6904 2.63013C12.0266 4.29397 11.0101 6.60497 11.0101 9.0998C11.0101 13.8172 14.6207 17.7921 19.2347 18.2535C19.523 18.2824 19.769 18.4747 19.8664 18.7477C19.9638 19.0206 19.8953 19.3252 19.6904 19.5301C17.7652 21.4553 15.0798 22.7498 12.0601 22.7498C6.14584 22.7498 1.31006 17.914 1.31006 11.9998ZM18.2826 3.18013C18.6248 3.41347 18.7131 3.88007 18.4797 4.2223L16.9797 6.4223C16.7464 6.76454 16.2798 6.85281 15.9376 6.61947C15.5953 6.38613 15.507 5.91953 15.7404 5.5773L17.2404 3.3773C17.4737 3.03506 17.9403 2.94679 18.2826 3.18013ZM22.3744 8.57122C22.5006 8.96573 22.2831 9.38788 21.8886 9.51412L19.3886 10.3141C18.9941 10.4404 18.572 10.2229 18.4457 9.82838C18.3195 9.43388 18.537 9.01173 18.9315 8.88548L21.4315 8.08548C21.826 7.95924 22.2481 8.17671 22.3744 8.57122ZM18.4457 13.8712C18.572 13.4767 18.9941 13.2592 19.3886 13.3855L21.8886 14.1855C22.2831 14.3117 22.5006 14.7339 22.3744 15.1284C22.2481 15.5229 21.826 15.7404 21.4315 15.6141L18.9315 14.8141C18.537 14.6879 18.3195 14.2657 18.4457 13.8712Z" fill="#666666" fill-rule="evenodd"></path>
+</svg>
+</label>
+<input aria-label="Switch to light mode" class="md-option" data-md-color-accent="indigo" data-md-color-media="" data-md-color-primary="indigo" data-md-color-scheme="slate" id="__palette_1" name="__palette" type="radio">
+<label class="md-header__button md-icon" for="__palette_0" hidden="" title="Switch to light mode">
+<svg fill="none" height="24" viewBox="0 0 25 24" width="25" xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd" d="M2.74023 12C2.74023 6.06765 7.54683 1.25 13.4902 1.25C13.8903 1.25 14.2805 1.27165 14.6707 1.31501C14.9558 1.34668 15.1978 1.53811 15.2942 1.80817C15.3907 2.07824 15.3247 2.37967 15.1242 2.58473C13.492 4.2542 12.4779 6.53585 12.4779 9.05942C12.4779 13.8286 16.0828 17.7505 20.7112 18.2534C20.9967 18.2844 21.2394 18.4757 21.3363 18.746C21.4331 19.0163 21.3671 19.3182 21.1663 19.5235C19.2181 21.515 16.4993 22.75 13.4902 22.75C7.55739 22.75 2.74023 17.9328 2.74023 12ZM13.0185 2.76181C8.12428 3.0074 4.24023 7.05303 4.24023 12C4.24023 17.1044 8.38582 21.25 13.4902 21.25C15.5438 21.25 17.438 20.583 18.9705 19.4522C14.3701 18.2367 10.9779 14.0471 10.9779 9.05942C10.9779 6.70356 11.7391 4.52928 13.0185 2.76181Z" fill="#666666" fill-rule="evenodd"></path>
+</svg>
+</label>
+</form>
+<script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+<label class="md-header__button md-icon" for="__search">
+<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+</label>
+<div class="md-search" data-md-component="search" role="dialog">
+<label class="md-search__overlay" for="__search"></label>
+<div class="md-search__inner" role="search">
+<form class="md-search__form" name="search">
+<input aria-label="Search" autocapitalize="off" autocomplete="off" autocorrect="off" class="md-search__input" data-md-component="search-query" name="query" placeholder="Search" required="" spellcheck="false" type="text">
+<label class="md-search__icon md-icon" for="__search">
+<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"></path></svg>
+</label>
+<nav aria-label="Search" class="md-search__options">
+<button aria-label="Clear" class="md-search__icon md-icon" tabindex="-1" title="Clear" type="reset">
+<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
+</button>
+</nav>
+</form>
+<div class="md-search__output">
+<div class="md-search__scrollwrap" tabindex="0">
+<div class="md-search-result" data-md-component="search-result">
+<div class="md-search-result__meta">Type to start searching</div>
+<ol class="md-search-result__list" role="presentation"></ol>
+</div>
+</div>
+</div>
+</div>
+</div>
+<a class="link" href="https://nokia.sharepoint.com/sites/tv-automation/SitePages/Home.aspx" id="aaLink" target="_blank">
+<span aria-label="Automation &amp; Analytics Logo" class="AALogo" id="aaLogo" role="img">
+<svg fill="none" height="250" viewBox="0 0 250 250" width="250" xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd" d="M198.276 0C207.798 0 215.517 7.71923 215.517 17.2414V198.276C215.517 207.798 207.798 215.517 198.276 215.517H17.2414C7.71923 215.517 0 207.798 0 198.276V17.2414C0 7.71923 7.71923 0 17.2414 0H198.276ZM94.8844 53.088L138.546 131.257H50.9854L19.3966 187.5H45.4817L64.5626 153.76H150.955L170.036 187.5H196.121L107.752 30.1724L94.8844 53.088Z" fill="#005AFF" fill-rule="evenodd"></path>
+<path d="M232.759 30.4166C243.339 39.8875 250 53.6477 250 68.9655V198.276C250 226.396 227.56 249.275 199.61 249.983L198.276 250H68.9655L67.6312 249.983C52.8491 249.609 39.6096 243.032 30.4144 232.759H198.276C217.32 232.759 232.759 217.32 232.759 198.276V30.4166Z" fill="#005AFF"></path>
+</svg>
+</span>
+</a>
+</div>
+</nav>
+</header>
+<div class="md-container" data-md-component="container">
+<main class="md-main" data-md-component="main">
+<div class="md-main__inner md-grid">
+<div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" style="top: 56px;">
+<div class="md-sidebar__scrollwrap" style="height: 792px;">
+<div class="md-sidebar__inner">
+<nav aria-label="Navigation" class="md-nav md-nav--primary" data-md-level="0">
+<label class="md-nav__title" for="__drawer">
+<a aria-label="TAF User Guide" class="md-nav__button md-logo" data-md-component="logo" href="https://taf.wrgitlab-pages.int.net.nokia.com/miscellaneous/taf-user-guide/" title="TAF User Guide">
+<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+</a>
+    TAF User Guide
+  </label>
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="https://taf.wrgitlab-pages.int.net.nokia.com/miscellaneous/taf-user-guide/">
+<span class="md-ellipsis">
+    About
+  </span>
+</a>
+</li>
+<li class="md-nav__item md-nav__item--active">
+<input class="md-nav__toggle md-toggle" id="__toc" type="checkbox">
+<label class="md-nav__link md-nav__link--active" for="__toc">
+<span class="md-ellipsis">
+    How to install a TAF package
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<a class="md-nav__link md-nav__link--active" href="https://taf.wrgitlab-pages.int.net.nokia.com/miscellaneous/taf-user-guide/package_installation/">
+<span class="md-ellipsis">
+    How to install a TAF package
+  </span>
+</a>
+<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="__toc">
+<span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+<ul class="md-nav__list" data-md-component="toc">
+<li class="md-nav__item">
+<a class="md-nav__link md-nav__link--passed" href="https://taf.wrgitlab-pages.int.net.nokia.com/miscellaneous/taf-user-guide/package_installation/#pip-configuration">
+<span class="md-ellipsis">
+      Pip configuration
+    </span>
+</a>
+<nav aria-label="Pip configuration" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link md-nav__link--passed" href="https://taf.wrgitlab-pages.int.net.nokia.com/miscellaneous/taf-user-guide/package_installation/#configuring-pip-client-via-set-me-up">
+<span class="md-ellipsis">
+      Configuring pip client via Set Me Up
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link md-nav__link--passed" href="https://taf.wrgitlab-pages.int.net.nokia.com/miscellaneous/taf-user-guide/package_installation/#using-virtual-environment">
+<span class="md-ellipsis">
+      Using virtual environment
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link md-nav__link--passed md-nav__link--active" href="https://taf.wrgitlab-pages.int.net.nokia.com/miscellaneous/taf-user-guide/package_installation/#installation">
+<span class="md-ellipsis">
+      Installation
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="https://taf.wrgitlab-pages.int.net.nokia.com/miscellaneous/taf-user-guide/rf_writeup/">
+<span class="md-ellipsis">
+    Robot Framework 5.0 - what's new
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="https://taf.wrgitlab-pages.int.net.nokia.com/miscellaneous/taf-user-guide/impact_radar/">
+<span class="md-ellipsis">
+    Impact Radar user documentation
+  </span>
+</a>
+</li>
+<li class="md-nav__item md-nav__item--section md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_5" type="checkbox">
+<label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+<span class="md-ellipsis">
+    TAF Users
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_5_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_5">
+<span class="md-nav__icon md-icon"></span>
+            TAF Users
+          </label>
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="https://taf.wrgitlab-pages.int.net.nokia.com/miscellaneous/taf-user-guide/env_set_up/">
+<span class="md-ellipsis">
+    TAF user environment set up
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="https://taf.wrgitlab-pages.int.net.nokia.com/miscellaneous/taf-user-guide/configuration_example/">
+<span class="md-ellipsis">
+    TAF configuration for Robot Framework TCs
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="https://taf.wrgitlab-pages.int.net.nokia.com/miscellaneous/taf-user-guide/collector_concepts/">
+<span class="md-ellipsis">
+    Collector Concepts
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="https://taf.wrgitlab-pages.int.net.nokia.com/miscellaneous/taf-user-guide/anonymous_access_removal/">
+<span class="md-ellipsis">
+    Anonymous access removal 2026
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+<div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" style="top: 56px;">
+<div class="md-sidebar__scrollwrap" style="height: 792px;">
+<div class="md-sidebar__inner">
+<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="__toc">
+<span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+<ul class="md-nav__list" data-md-component="toc">
+<li class="md-nav__item">
+<a class="md-nav__link md-nav__link--passed" href="https://taf.wrgitlab-pages.int.net.nokia.com/miscellaneous/taf-user-guide/package_installation/#pip-configuration">
+<span class="md-ellipsis">
+      Pip configuration
+    </span>
+</a>
+<nav aria-label="Pip configuration" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link md-nav__link--passed" href="https://taf.wrgitlab-pages.int.net.nokia.com/miscellaneous/taf-user-guide/package_installation/#configuring-pip-client-via-set-me-up">
+<span class="md-ellipsis">
+      Configuring pip client via Set Me Up
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link md-nav__link--passed" href="https://taf.wrgitlab-pages.int.net.nokia.com/miscellaneous/taf-user-guide/package_installation/#using-virtual-environment">
+<span class="md-ellipsis">
+      Using virtual environment
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link md-nav__link--passed md-nav__link--active" href="https://taf.wrgitlab-pages.int.net.nokia.com/miscellaneous/taf-user-guide/package_installation/#installation">
+<span class="md-ellipsis">
+      Installation
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+<div class="md-content" data-md-component="content">
+<article class="md-content__inner md-typeset">
+<h1 id="taf-package-installation">TAF package installation</h1>
+<p>This document presents basic guide regarding TAF package installation. Detailed
+information about each project can be found in <a href="https://docs.taf.ute.nsn-rdnet.net/">TAF documentation portal</a>.</p>
+<h2 id="pip-configuration">Pip configuration</h2>
+<p>In order to download a TAF library, user needs to point to certain Python
+package index. TAF uses Artifactory for storing Python packages.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Anonymous access to Artifactory has been removed. You must authenticate
+with your username and an identity token in order to download
+packages. See <a href="https://taf.wrgitlab-pages.int.net.nokia.com/miscellaneous/taf-user-guide/anonymous_access_removal/">Anonymous access removal</a> for details.</p>
+</div>
+<h3 id="configuring-pip-client-via-set-me-up">Configuring pip client via Set Me Up</h3>
+<p>To generate your pip configuration in Artifactory:</p>
+<ol>
+<li>Log in to <a href="https://artifactory-espoo2.int.net.nokia.com/ui/login">Artifactory</a>
+  and open <strong>User Profile</strong> (top-right corner).</li>
+<li>Click <strong>Set Me Up</strong>.</li>
+<li>Select <strong>pypi</strong> package type.</li>
+<li>Change client to <strong>pip</strong> and select your repository.</li>
+<li>Generate the configuration and follow instructions.</li>
+</ol>
+<p>Ensure that your test environment uses proper index URL (which can be
+configured globally in <code>pip.conf</code> file or passed to <code>pip</code> via <code>-i</code> flag):</p>
+<ul>
+<li><code>pip.conf</code> file located under <code>$HOME/.pip/pip.conf</code> (Linux based OS):</li>
+<li>Package installation command:
+  <code>pip install PACKAGE_NAME -i https://&lt;username&gt;:&lt;token&gt;@artifactory-espoo2.int.net.nokia.com/artifactory/api/pypi/ute-pypi-virtual/simple</code></li>
+</ul>
+<p>A <code>pip.conf</code> file should look as follows:</p>
+<div class="highlight"><pre><span></span><code class="md-code__content" tabindex="0"><span id="__span-0-1"><a href="https://taf.wrgitlab-pages.int.net.nokia.com/miscellaneous/taf-user-guide/package_installation/#__codelineno-0-1" id="__codelineno-0-1" name="__codelineno-0-1"></a>[global]
+</span><span id="__span-0-2"><a href="https://taf.wrgitlab-pages.int.net.nokia.com/miscellaneous/taf-user-guide/package_installation/#__codelineno-0-2" id="__codelineno-0-2" name="__codelineno-0-2"></a>index-url = https://&lt;username&gt;:&lt;token&gt;@artifactory-espoo2.int.net.nokia.com/artifactory/api/pypi/ute-pypi-virtual/simple
+</span></code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Please keep in mind that there are also virtual instances of Artifactory
+targeted at some other Nokia sites. Depending on your location, using them can
+significantly improve package download speed:</p>
+<ul>
+<li>Bangalore -
+  https://artifactory-blr1.int.net.nokia.com/artifactory/api/pypi/ute-pypi-virtual/simple</li>
+<li>Hangzhou -
+  https://artifactory-hz1.int.net.nokia.com/artifactory/api/pypi/ute-pypi-virtual/simple</li>
+<li>Franklin Park -
+  https://artifactory-fpark1.int.net.nokia.com/artifactory/api/pypi/ute-pypi-virtual/simple</li>
+</ul>
+</div>
+<h2 id="using-virtual-environment">Using virtual environment</h2>
+<p>In order not to affect the main OS globally, you should install TAF packages in
+an isolated environment. This can be achieved using <code>venv</code> built-in Python
+module:</p>
+<div class="highlight"><pre><span></span><code class="md-code__content"><span id="__span-1-1"><a href="https://taf.wrgitlab-pages.int.net.nokia.com/miscellaneous/taf-user-guide/package_installation/#__codelineno-1-1" id="__codelineno-1-1" name="__codelineno-1-1"></a>python3.9 -m venv my_venv
+</span><span id="__span-1-2"><a href="https://taf.wrgitlab-pages.int.net.nokia.com/miscellaneous/taf-user-guide/package_installation/#__codelineno-1-2" id="__codelineno-1-2" name="__codelineno-1-2"></a>source my_venv/bin/activate
+</span></code></pre></div>
+<p>After activating a virtual environment, you can safely install and work with a
+certain Python library without worrying that global Python environment gets
+affected.</p>
+<p>In order to use the global Python interpreter again, virtual environment needs
+to be deactivated (using <code>deactivate</code> command).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you are a UTE test line user, then most probably you can take advantage of
+<em>pyenv</em>. Pyenv utility is present in the OS to create a virtual environment.
+Use <code>pyenv virtualenv &lt;PYTHON_VERSION&gt; &lt;VENV_NAME&gt;</code>, where:</p>
+<ul>
+<li><code>PYTHON_VERSION</code> stands for version of Python installed in OS</li>
+<li>it can be verified by <code>pyenv versions</code> command</li>
+<li><code>VENV_NAME</code> stands for virtual environment name used later on for activation</li>
+</ul>
+<p>Example for Python 3.9.14:</p>
+<div class="highlight"><pre><span></span><code class="md-code__content"><span id="__span-2-1"><a href="https://taf.wrgitlab-pages.int.net.nokia.com/miscellaneous/taf-user-guide/package_installation/#__codelineno-2-1" id="__codelineno-2-1" name="__codelineno-2-1"></a>pyenv virtualenv 3.9.14 test_venv
+</span><span id="__span-2-2"><a href="https://taf.wrgitlab-pages.int.net.nokia.com/miscellaneous/taf-user-guide/package_installation/#__codelineno-2-2" id="__codelineno-2-2" name="__codelineno-2-2"></a>pyenv activate test_venv
+</span><span id="__span-2-3"><a href="https://taf.wrgitlab-pages.int.net.nokia.com/miscellaneous/taf-user-guide/package_installation/#__codelineno-2-3" id="__codelineno-2-3" name="__codelineno-2-3"></a>...
+</span><span id="__span-2-4"><a href="https://taf.wrgitlab-pages.int.net.nokia.com/miscellaneous/taf-user-guide/package_installation/#__codelineno-2-4" id="__codelineno-2-4" name="__codelineno-2-4"></a>pyenv deactivate
+</span></code></pre></div>
+</div>
+<h2 id="installation">Installation</h2>
+<p>Package can be simply installed via <code>pip install PACKAGE_NAME</code> command, for
+example:</p>
+<div class="highlight"><pre><span></span><code class="md-code__content"><span id="__span-3-1"><a href="https://taf.wrgitlab-pages.int.net.nokia.com/miscellaneous/taf-user-guide/package_installation/#__codelineno-3-1" id="__codelineno-3-1" name="__codelineno-3-1"></a>pip install taf.transport.ssh
+</span></code></pre></div>
+</article>
+</div>
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+</div>
+<button class="md-top md-icon" data-md-component="top" hidden="" type="button" tabindex="-1" style="top: 72px;">
+<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"></path></svg>
+  Back to top
+</button>
+</main>
+<footer class="md-footer">
+<div class="md-footer-meta md-typeset">
+<div class="md-footer-meta__inner md-grid">
+<div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" rel="noopener" target="_blank">
+      Material for MkDocs
+    </a>
+</div>
+</div>
+</div>
+</footer>
+</div>
+<div class="md-dialog" data-md-component="dialog">
+<div class="md-dialog__inner md-typeset"></div>
+</div>
+<script id="__config" type="application/json">{"base": "..", "features": ["content.code.annotate", "content.tooltips", "header.autohide", "navigation.expand light mode", "navigation.indexes", "navigation.instant", "navigation.tracking", "navigation.sections", "navigation.top"], "search": "../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+<script src="./How to install a TAF package - TAF User Guide_files/bundle.60a45f97.min.js.download"></script>
+<script src="./How to install a TAF package - TAF User Guide_files/mermaid.min.js.download"></script>
+
+</body></html>

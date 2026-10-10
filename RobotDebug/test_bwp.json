@@ -1,0 +1,30 @@
+[
+    {
+        "distName": "MRBTS-80/NRBTS-80/NRCELL-302",
+        "operation": "update",
+        "parameters": [
+            {
+                "parameterName": "cellBwpList",
+                "value": [
+                    {
+                        "actPdcchCceFragmentControl": false,
+                        "actUpperThrAckNackFiltering": true,
+                        "actUpperThrAckNackHrFiltering": true,
+                        "bwpDN": "MRBTS-80/NRBTS-80/BWP_PROFILE-11001",
+                        "cellBwpId": "0",
+                        "pdcchResourcePreference": "peakRate"
+                    },
+                    {
+                        "actPdcchCceFragmentControl": false,
+                        "actUpperThrAckNackFiltering": true,
+                        "actUpperThrAckNackHrFiltering": true,
+                        "bwpDN": "MRBTS-80/NRBTS-80/BWP_PROFILE-21000",
+                        "cellBwpId": "1",
+                        "pdcchResourcePreference": "peakRate"
+                    }
+                ],
+                "operation": "update"
+            }
+        ]
+    }
+]

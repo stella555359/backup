@@ -1,0 +1,133 @@
+./T813_MTU-UE2_UDP.sh: line 2: a: command not found
+------------------------------------------------------------
+Client connecting to 100.76.95.82, UDP port 56817
+Sending 1400 byte datagrams, IPG target: 5340.58 us (kalman adjust)
+UDP buffer size: 64.0 KByte (default)
+------------------------------------------------------------
+[  1] local 10.71.207.160 port 34457 connected with 100.76.95.82 port 56817
+[ ID] Interval       Transfer     Bandwidth
+[  1] 0.00-1.00 sec   258 KBytes  2.12 Mbits/sec
+[  1] 1.00-2.00 sec   256 KBytes  2.09 Mbits/sec
+[  1] 2.00-3.00 sec   256 KBytes  2.09 Mbits/sec
+[  1] 3.00-4.00 sec   256 KBytes  2.09 Mbits/sec
+[  1] 4.00-5.00 sec   257 KBytes  2.11 Mbits/sec
+[  1] 5.00-6.00 sec   256 KBytes  2.09 Mbits/sec
+[  1] 6.00-7.00 sec   256 KBytes  2.09 Mbits/sec
+[  1] 7.00-8.00 sec   256 KBytes  2.09 Mbits/sec
+[  1] 8.00-9.00 sec   257 KBytes  2.11 Mbits/sec
+[  1] 9.00-10.00 sec   256 KBytes  2.09 Mbits/sec
+[  1] 10.00-11.00 sec   256 KBytes  2.09 Mbits/sec
+[  1] 11.00-12.00 sec   256 KBytes  2.09 Mbits/sec
+[  1] 12.00-13.00 sec   257 KBytes  2.11 Mbits/sec
+[  1] 13.00-14.00 sec   256 KBytes  2.09 Mbits/sec
+[  1] 14.00-15.00 sec   256 KBytes  2.09 Mbits/sec
+[  1] 15.00-16.00 sec   256 KBytes  2.09 Mbits/sec
+[  1] 16.00-17.00 sec   257 KBytes  2.11 Mbits/sec
+[  1] 17.00-18.00 sec   256 KBytes  2.09 Mbits/sec
+[  1] 18.00-19.00 sec   256 KBytes  2.09 Mbits/sec
+[  1] 19.00-20.00 sec   256 KBytes  2.09 Mbits/sec
+[  1] 0.00-20.01 sec  5.00 MBytes  2.10 Mbits/sec
+[  1] Sent 3749 datagrams
+read failed: Connection refused
+read failed: Connection refused
+read failed: Connection refused
+read failed: Connection refused
+read failed: Connection refused
+read failed: Connection refused
+read failed: Connection refused
+read failed: Connection refused
+read failed: Connection refused
+read failed: Connection refused
+read failed: Connection refused
+read failed: Connection refused
+[  3] WARNING: did not receive ack of last datagram after 10 tries.
+sleep start
+Num: 1 sleep 15s end
+------------------------------------------------------------
+Client connecting to 100.76.95.82, UDP port 56817
+Sending 1400 byte datagrams, IPG target: 5340.58 us (kalman adjust)
+UDP buffer size: 64.0 KByte (default)
+------------------------------------------------------------
+[  1] local 10.71.207.160 port 56760 connected with 100.76.95.82 port 56817
+[ ID] Interval       Transfer     Bandwidth
+[  1] 0.00-1.00 sec   258 KBytes  2.12 Mbits/sec
+[  1] 1.00-2.00 sec   256 KBytes  2.09 Mbits/sec
+[  1] 2.00-3.00 sec   256 KBytes  2.09 Mbits/sec
+[  1] 3.00-4.00 sec   256 KBytes  2.09 Mbits/sec
+[  1] 4.00-5.00 sec   257 KBytes  2.11 Mbits/sec
+[  1] 5.00-6.00 sec   256 KBytes  2.09 Mbits/sec
+[  1] 6.00-7.00 sec   256 KBytes  2.09 Mbits/sec
+[  1] 7.00-8.00 sec   256 KBytes  2.09 Mbits/sec
+[  1] 8.00-9.00 sec   257 KBytes  2.11 Mbits/sec
+[  1] 9.00-10.00 sec   256 KBytes  2.09 Mbits/sec
+[  1] 10.00-11.00 sec   256 KBytes  2.09 Mbits/sec
+[  1] 11.00-12.00 sec   256 KBytes  2.09 Mbits/sec
+[  1] 12.00-13.00 sec   257 KBytes  2.11 Mbits/sec
+[  1] 13.00-14.00 sec   256 KBytes  2.09 Mbits/sec
+[  1] 14.00-15.00 sec   256 KBytes  2.09 Mbits/sec
+[  1] 15.00-16.00 sec   256 KBytes  2.09 Mbits/sec
+[  1] 16.00-17.00 sec   257 KBytes  2.11 Mbits/sec
+[  1] 17.00-18.00 sec   256 KBytes  2.09 Mbits/sec
+[  1] 18.00-19.00 sec   256 KBytes  2.09 Mbits/sec
+[  1] 19.00-20.00 sec   256 KBytes  2.09 Mbits/sec
+[  1] 0.00-20.01 sec  5.00 MBytes  2.10 Mbits/sec
+[  1] Sent 3749 datagrams
+read failed: Connection refused
+read failed: Connection refused
+read failed: Connection refused
+read failed: Connection refused
+read failed: Connection refused
+read failed: Connection refused
+read failed: Connection refused
+read failed: Connection refused
+read failed: Connection refused
+read failed: Connection refused
+read failed: Connection refused
+[  3] WARNING: did not receive ack of last datagram after 10 tries.
+sleep start
+Num: 2 sleep 15s end
+------------------------------------------------------------
+Client connecting to 100.76.95.82, UDP port 56817
+Sending 1400 byte datagrams, IPG target: 5340.58 us (kalman adjust)
+UDP buffer size: 64.0 KByte (default)
+------------------------------------------------------------
+[  1] local 10.71.207.160 port 50077 connected with 100.76.95.82 port 56817
+[ ID] Interval       Transfer     Bandwidth
+[  1] 0.00-1.00 sec   257 KBytes  2.11 Mbits/sec
+[  1] 1.00-2.00 sec   256 KBytes  2.09 Mbits/sec
+[  1] 2.00-3.00 sec   256 KBytes  2.09 Mbits/sec
+[  1] 3.00-4.00 sec   256 KBytes  2.09 Mbits/sec
+[  1] 4.00-5.00 sec   258 KBytes  2.12 Mbits/sec
+[  1] 5.00-6.00 sec   254 KBytes  2.08 Mbits/sec
+[  1] 6.00-7.00 sec   256 KBytes  2.09 Mbits/sec
+[  1] 7.00-8.00 sec   256 KBytes  2.09 Mbits/sec
+[  1] 8.00-9.00 sec   258 KBytes  2.12 Mbits/sec
+[  1] 9.00-10.00 sec   254 KBytes  2.08 Mbits/sec
+[  1] 10.00-11.00 sec   256 KBytes  2.09 Mbits/sec
+[  1] 11.00-12.00 sec   256 KBytes  2.09 Mbits/sec
+[  1] 12.00-13.00 sec   258 KBytes  2.12 Mbits/sec
+[  1] 13.00-14.00 sec   254 KBytes  2.08 Mbits/sec
+[  1] 14.00-15.00 sec   256 KBytes  2.09 Mbits/sec
+[  1] 15.00-16.00 sec   256 KBytes  2.09 Mbits/sec
+[  1] 16.00-17.00 sec   258 KBytes  2.12 Mbits/sec
+[  1] 17.00-18.00 sec   254 KBytes  2.08 Mbits/sec
+[  1] 18.00-19.00 sec   256 KBytes  2.09 Mbits/sec
+[  1] 19.00-20.00 sec   256 KBytes  2.09 Mbits/sec
+[  1] 0.00-20.00 sec  5.00 MBytes  2.10 Mbits/sec
+[  1] Sent 3748 datagrams
+read failed: Connection refused
+read failed: Connection refused
+read failed: Connection refused
+read failed: Connection refused
+read failed: Connection refused
+read failed: Connection refused
+read failed: Connection refused
+read failed: Connection refused
+read failed: Connection refused
+read failed: Connection refused
+read failed: Connection refused
+read failed: Connection refused
+read failed: Connection refused
+read failed: Connection refused
+[  3] WARNING: did not receive ack of last datagram after 10 tries.
+sleep start

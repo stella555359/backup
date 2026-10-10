@@ -1,0 +1,11 @@
+#!/bin/bash
+./TL284_MTU-008-UE1.sh &
+./TL284_MTU-008-UE2.sh &
+./TL284_MTU-008-UE3.sh &
+./TL284_MTU-008-UE4.sh &
+./TL284_MTU-008-UE5.sh &
+./TL284_MTU-008-UE6.sh &
+./TL284_MTU-008-UE7.sh &
+./TL284_MTU-008-UE8.sh
+
+

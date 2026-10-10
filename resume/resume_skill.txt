@@ -1,0 +1,47 @@
+第一份项目偏“测试开发/自动化框架”：亮点在 UE 测试场景、FastAPI 接口封装、SSH 自动化库、远程设备控制、提效指标。面试竞争力取决于你能不能讲清楚“原流程痛点、接口怎么设计、SSH 稳定性怎么保证、效率提升怎么算”。
+
+第二份项目偏“DevOps/测试平台”：亮点在 Jenkins 自动构建部署、测试执行、结果入库、Power BI 指标展示、Sonar/Klockwork 质量扫描。竞争力更像完整工程闭环，适合测试平台、CI/CD、质量效能方向。
+
+最强包装方式是把两类能力合起来讲：你不是只会写测试脚本，而是能把测试执行、远程设备控制、CI/CD、结果入库和质量指标展示串成闭环。面试时一定准备好指标口径，比如效率提升 30%/40%、失败分析率、首次成功率、用例执行率是怎么统计出来的。
+
+第二份项目跟我现在在做的这个C:\TA\jenkins_robotframework这个项目可以联系的起来吗？
+
+
+第二份项目跟我现在在做的这个C:\TA\jenkins_robotframework这个项目可以联系的起来吗？
+第二份项目跟我现在在做的这个C:\TA\jenkins_robotframework这个项目可以联系的起来吗？
+
+第二份简历项目
+Jenkins 自动构建/部署/运行测试
+-> 收集测试结果
+-> 数据入库
+-> Power BI 展示 KPI
+
+当前 jenkins_robotframework 项目
+automation-portal
+-> platform-api
+-> Jenkins / UTE Robot
+-> test-workflow-runner
+-> artifact / kpi_generator / kpi_anomaly_detector
+-> callback / SQLite
+-> portal detail / KPI / artifact 展示
+
+最强关联点有 5 个：
+
+都是 Jenkins 驱动测试执行。
+都强调测试结果收集、入库和后续分析。
+都有 KPI 指标展示，只是第二份用 Power BI，你现在这个项目准备自己做 portal 展示。
+都服务于测试效率和质量提升。
+都有“手工执行测试 -> 平台化/自动化执行 -> 可追踪可分析”的演进逻辑。
+区别是：你现在做的项目更完整、更贴近测试开发工程能力。第二份项目偏“Jenkins + 数据报表平台”，
+而现在这个项目多了 FastAPI contract、React portal、真实 Robot/UTE 接入、
+artifact 管理、kpi_generator / detector 后处理、Postman/JMeter/Allure 测试流程。
+
+面试时可以这样讲：
+
+“我之前做过 Jenkins 自动构建部署和测试结果平台，
+核心是把测试执行、结果入库和 KPI 展示串起来。
+现在这个项目是在这个思路上进一步系统化，
+把执行入口拆成 React portal、FastAPI run 管理、
+Jenkins/Robot 执行层、artifact 和 KPI 后处理闭环，
+这样不仅能展示结果，还能从前端直接创建 run、
+追踪状态、查看报告和异常摘要。”

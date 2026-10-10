@@ -1,0 +1,1457 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sunny's English Speech Stage - Ultimate 3D Live Presenter Simulator</title>
+    <!-- 引入谷歌童趣及现代字体，建立高贵戏剧感设计 -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --stage-bg: #09072a; /* 更深邃神秘的剧院背景 */
+            --board-bg: #ffffff;
+            --text-color: #0f172a;
+            --primary: #0ea5e9;
+            --primary-hover: #0284c7;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Quicksand', 'Microsoft YaHei', sans-serif;
+            background-color: #030214;
+            color: #f8fafc;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            perspective: 1200px; /* 3D 舞台立体透视视距 */
+        }
+
+        /* 3D 星空大剧场容器 */
+        .theatre-container {
+            width: 95%;
+            max-width: 1150px;
+            height: 90vh;
+            max-height: 750px;
+            background-color: var(--stage-bg);
+            border-radius: 40px;
+            border: 12px solid #1e1b4b;
+            box-shadow: 0 35px 60px -15px rgba(0, 0, 0, 0.8), 0 0 40px rgba(99, 102, 241, 0.2);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* 顶部璀璨霓虹标题栏 */
+        .header-bar {
+            padding: 18px 35px;
+            background: linear-gradient(90deg, #0f172a 0%, #1e1b4b 100%);
+            border-bottom: 4px solid #312e81;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .header-title {
+            font-family: 'Fredoka One', sans-serif;
+            font-size: 24px;
+            color: #38bdf8;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
+        }
+
+        .header-title svg {
+            animation: rotate-ani 15s infinite linear;
+            transform-origin: center;
+        }
+
+        .mode-badge {
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+            color: white;
+            font-size: 14px;
+            font-weight: 700;
+            padding: 8px 18px;
+            border-radius: 20px;
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
+            animation: pulse-badge 2s infinite ease-in-out;
+        }
+
+        @keyframes pulse-badge {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 12px rgba(16, 185, 129, 0.4); }
+            50% { transform: scale(1.05); box-shadow: 0 0 20px rgba(16, 185, 129, 0.7); }
+        }
+
+        /* 剧场主舞台区域（3D） */
+        .stage-area {
+            flex: 1;
+            display: flex;
+            position: relative;
+            background: radial-gradient(circle at center, #1e1b4b 0%, #030214 100%);
+            padding: 25px;
+            gap: 40px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 左侧：3D 演讲小舞台（小男孩 Sunny 的位置） */
+        .left-actor-stage {
+            flex: 0.95;
+            height: 100%;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        /* 3D 实木浮雕舞台地板 */
+        .wood-podium {
+            width: 85%;
+            height: 45px;
+            background: linear-gradient(180deg, #d97706 0%, #78350f 100%);
+            border-radius: 50% / 22px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6), inset 0 2px 4px rgba(251, 191, 36, 0.5);
+            transform: rotateX(22deg);
+            z-index: 1;
+            position: relative;
+            bottom: 8px;
+            border-top: 4px solid #fbbf24;
+        }
+
+        /* 右侧：超大智慧投影屏幕 */
+        .right-projector-screen {
+            flex: 1.25;
+            height: 85%;
+            background-color: var(--board-bg);
+            border-radius: 28px;
+            border: 10px solid #4b5563;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), inset 0 0 25px rgba(0,0,0,0.15);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 25px;
+            color: var(--text-color);
+            transition: all 0.6s ease;
+        }
+
+        /* 智慧投影仪黑板擦/笔槽 */
+        .screen-bezel-bottom {
+            width: 180px;
+            height: 14px;
+            background-color: #9ca3af;
+            border-radius: 5px;
+            position: absolute;
+            bottom: -7px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 5px 8px rgba(0,0,0,0.2);
+        }
+
+        /* 投影仪幻灯片库 */
+        .projector-slides {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .projector-slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 22px;
+            transition: opacity 0.6s ease-in-out, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transform: scale(0.9) translateY(10px);
+        }
+
+        .projector-slide.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: scale(1) translateY(0);
+        }
+
+        /* 投影幻灯片图形区 */
+        .slide-graphic {
+            flex: 1.3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        /* 投影幻灯片文本区 */
+        .slide-text {
+            flex: 0.7;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            width: 100%;
+            padding: 0 25px;
+        }
+
+        .slide-en-txt {
+            font-family: 'Fredoka One', 'Quicksand', sans-serif;
+            font-size: 28px;
+            line-height: 1.3;
+            color: #0284c7;
+            font-weight: bold;
+            text-shadow: 0 2px 4px rgba(2, 132, 199, 0.1);
+        }
+
+        /* 演讲提词字幕栏（位于舞台底部中央，半透明毛玻璃质感） */
+        .subtitle-overlay-panel {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(10, 10, 26, 0.85);
+            border: 2px solid #4338ca;
+            padding: 15px 35px;
+            border-radius: 24px;
+            text-align: center;
+            max-width: 82%;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5), 0 0 15px rgba(99, 102, 241, 0.3);
+            backdrop-filter: blur(12px);
+            z-index: 100;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .subtitle-en {
+            font-family: 'Fredoka One', 'Quicksand', sans-serif;
+            font-size: 22px;
+            color: #38bdf8;
+            font-weight: bold;
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .subtitle-cn {
+            font-size: 16px;
+            color: #cbd5e1;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        /* 舞台迷幻光影与双路聚光灯效果 */
+        .stage-lighting {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 25% 20%, rgba(254, 240, 138, 0.18) 0%, rgba(30, 27, 75, 0) 50%),
+                        radial-gradient(circle at 75% 20%, rgba(56, 189, 248, 0.15) 0%, rgba(30, 27, 75, 0) 50%),
+                        radial-gradient(circle at 50% 90%, rgba(99, 102, 241, 0.1) 0%, rgba(30, 27, 75, 0) 60%);
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .spotlight-beam-1 {
+            position: absolute;
+            top: 0;
+            left: 5%;
+            width: 200px;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(254, 240, 138, 0.12) 0%, rgba(254, 240, 138, 0) 80%);
+            clip-path: polygon(0 0, 100% 0, 45% 100%, 0 100%);
+            pointer-events: none;
+            z-index: 2;
+            transform-origin: top left;
+            animation: spotlight-sway-1 8s infinite ease-in-out;
+        }
+
+        .spotlight-beam-2 {
+            position: absolute;
+            top: 0;
+            right: 40%;
+            width: 180px;
+            height: 100%;
+            background: linear-gradient(225deg, rgba(56, 189, 248, 0.1) 0%, rgba(56, 189, 248, 0) 80%);
+            clip-path: polygon(100% 0, 0 0, 55% 100%, 100% 100%);
+            pointer-events: none;
+            z-index: 2;
+            transform-origin: top right;
+            animation: spotlight-sway-2 10s infinite ease-in-out;
+        }
+
+        @keyframes spotlight-sway-1 {
+            0%, 100% { transform: rotate(0deg) scaleX(1); }
+            50% { transform: rotate(4deg) scaleX(1.1); }
+        }
+
+        @keyframes spotlight-sway-2 {
+            0%, 100% { transform: rotate(0deg) scaleX(1); }
+            50% { transform: rotate(-5deg) scaleX(1.05); }
+        }
+
+        /* 底部智能控制台 */
+        .control-console {
+            background-color: #0b0f19;
+            padding: 22px 35px;
+            border-top: 4px solid #1e293b;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .console-btn {
+            font-family: 'Fredoka One', 'Quicksand', sans-serif;
+            font-size: 16px;
+            padding: 12px 24px;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-primary {
+            background-color: #0ea5e9;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #0284c7;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(2, 132, 199, 0.4);
+        }
+
+        .btn-secondary {
+            background-color: #1e293b;
+            color: #f3f4f6;
+            border: 1px solid #334155;
+        }
+
+        .btn-secondary:hover {
+            background-color: #334155;
+            transform: translateY(-1px);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 14px 35px;
+            font-size: 18px;
+            border-radius: 28px;
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-success:hover {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.55);
+        }
+
+        .btn-success.playing {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-success.playing:hover {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+        }
+
+        /* 隐藏复选框控制 */
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 16px;
+            color: #9ca3af;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .checkbox-container input {
+            cursor: pointer;
+            width: 20px;
+            height: 20px;
+            accent-color: #0ea5e9;
+        }
+
+        /* --- SVG 幻灯片原子动画 --- */
+        .pulse {
+            animation: pulse-ani 2.5s infinite ease-in-out;
+        }
+
+        .rotate-earth {
+            animation: rotate-ani 8s infinite linear;
+            transform-origin: center;
+        }
+
+        .shake {
+            animation: shake-ani 4s infinite ease-in-out;
+        }
+
+        .twinkle {
+            animation: twinkle-ani 1.5s infinite ease-in-out;
+        }
+
+        @keyframes pulse-ani {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.06); }
+        }
+
+        @keyframes rotate-ani {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes shake-ani {
+            0%, 100% { transform: rotate(0deg) translateY(0); }
+            25% { transform: rotate(2.5deg) translateY(-2px); }
+            75% { transform: rotate(-2.5deg) translateY(2px); }
+        }
+
+        @keyframes twinkle-ani {
+            0%, 100% { opacity: 0.35; }
+            50% { opacity: 1; }
+        }
+
+        /* --- 虚拟小男孩 Sunny 的“骨骼关节/动作引擎” --- */
+        #sunny-presenter {
+            z-index: 5;
+            position: relative;
+            bottom: -20px;
+            filter: drop-shadow(0 15px 25px rgba(0,0,0,0.5));
+        }
+
+        /* 1. 拟真物理呼吸层（Idle Breathing）
+           使小男孩在舞台上站立时保持自然的身体上下浮动及胸腔扩张，杜绝雕塑感 */
+        #char-upper-body {
+            animation: idle-breath 3.5s infinite ease-in-out;
+        }
+
+        @keyframes idle-breath {
+            0%, 100% {
+                transform: translateY(0) scaleY(1);
+            }
+            50% {
+                transform: translateY(-2.5px) scaleY(1.015);
+            }
+        }
+
+        /* 头部自然舒缓微摆 */
+        #char-head {
+            animation: head-breath 3.5s infinite ease-in-out;
+        }
+
+        @keyframes head-breath {
+            0%, 100% { transform: rotate(0deg) translateY(0); }
+            50% { transform: rotate(1deg) translateY(-1px); }
+        }
+
+        /* 呆毛自然晃动 */
+        #char-cowlick {
+            animation: hair-spring 4s infinite ease-in-out;
+            transform-origin: 130px 42px;
+        }
+
+        @keyframes hair-spring {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(8deg); }
+        }
+
+        /* 自然眼部眨眼（随机感） */
+        .eyes-normal circle.eye-pupil {
+            animation: eye-blink-ani 4.5s infinite linear;
+        }
+
+        @keyframes eye-blink-ani {
+            0%, 93%, 100% { transform: scaleY(1); }
+            96.5% { transform: scaleY(0.08); }
+        }
+
+        /* ================= 肢体演讲动作姿态数据库 =================
+           采用 Disney 动画经典 cubic-bezier(0.34, 1.56, 0.64, 1) 贝塞尔过渡，
+           内置“动作初速度缓冲-过冲弹回-复位微振”，运动表现极富弹性和生命力 */
+        
+        /* 姿态 1：挥手打招呼 (Wave) */
+        .act-wave #left-shoulder {
+            transform: rotate(-48deg);
+        }
+        .act-wave #left-elbow {
+            animation: wave-elbow-bounce 1s infinite ease-in-out;
+        }
+        @keyframes wave-elbow-bounce {
+            0%, 100% { transform: rotate(-5deg); }
+            50% { transform: rotate(-62deg); }
+        }
+        .act-wave #left-hand {
+            transform: rotate(-10deg);
+        }
+
+        /* 姿态 2：开阔致意/拥抱世界 (Welcome) */
+        .act-welcome #left-shoulder {
+            transform: rotate(-26deg);
+        }
+        .act-welcome #left-elbow {
+            transform: rotate(-18deg);
+        }
+        .act-welcome #right-shoulder {
+            transform: rotate(26deg);
+        }
+        .act-welcome #right-elbow {
+            transform: rotate(20deg);
+        }
+
+        /* 姿态 3：指向投影大屏幕 (Point At Screen)
+           由于屏幕在右侧，特设定：右手精准指向屏幕，头部侧转，眼珠注视右侧！ */
+        .act-point #right-shoulder {
+            transform: rotate(-102deg);
+        }
+        .act-point #right-elbow {
+            transform: rotate(12deg); /* 几乎伸直 */
+        }
+        .act-point #right-hand {
+            transform: rotate(-8deg);
+        }
+        .act-point #char-head {
+            transform: rotate(5deg); /* 头部微微偏向投影仪 */
+        }
+        .act-point #left-pupil, .act-point #right-pupil {
+            transform: translate(3.2px, -1.2px) !important; /* 眼神智能向右看 */
+        }
+
+        /* 姿态 4：画圈环抱/象征大地球 (Circle Ball) */
+        .act-circle #left-shoulder {
+            transform: rotate(-48deg);
+        }
+        .act-circle #left-elbow {
+            transform: rotate(-62deg);
+        }
+        .act-circle #right-shoulder {
+            transform: rotate(48deg);
+        }
+        .act-circle #right-elbow {
+            transform: rotate(62deg);
+        }
+
+        /* 姿态 5：深情捂胸口/表白最爱 (Love Chest) */
+        .act-love #left-shoulder {
+            transform: rotate(-16deg);
+        }
+        .act-love #left-elbow {
+            transform: rotate(-95deg); /* 肘部深度弯曲，手掌贴近心脏 */
+        }
+        .act-love #right-shoulder {
+            transform: rotate(16deg);
+        }
+        .act-love #right-elbow {
+            transform: rotate(95deg); /* 双手捂胸 */
+        }
+        .act-love #char-head {
+            transform: rotate(-3deg); /* 歪头更可爱 */
+        }
+
+        /* 姿态 6：90度超拟真弯腰鞠躬致谢 (Realistic Deep Bow)
+           重磅升级：模拟真实人体力学！
+           上躯干前倾 + 头部俯下 + 头发/领结受重力前滑 + 手臂垂下摆动 */
+        .act-bow #char-upper-body {
+            transform: scaleY(0.55) translateY(20px);
+            transform-origin: 130px 205px;
+            animation: none; /* 鞠躬时暂停闲置呼吸 */
+        }
+        .act-bow #char-head {
+            transform: scaleY(1.8) translateY(12px);
+            transform-origin: 130px 105px;
+            animation: none;
+        }
+        .act-bow #char-hair-fringe {
+            transform: translateY(3px); /* 刘海受重力前垂 */
+        }
+        .act-bow #bowtie {
+            transform: scaleY(1.8) translateY(5px); /* 领结受重力垂下悬空并保持比例 */
+            transform-origin: 130px 130px;
+        }
+        /* 双臂自然垂下，通过反向缩放维持完美手臂长度，解决断裂 */
+        .act-bow #left-shoulder {
+            transform: rotate(10deg) scaleY(1.8);
+            transform-origin: 94px 135px;
+        }
+        .act-bow #left-elbow {
+            transform: rotate(20deg);
+        }
+        .act-bow #right-shoulder {
+            transform: rotate(-10deg) scaleY(1.8);
+            transform-origin: 166px 135px;
+        }
+        .act-bow #right-elbow {
+            transform: rotate(-20deg);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="theatre-container">
+        <!-- 1. 顶部标题栏 -->
+        <div class="header-bar">
+            <div class="header-title">
+                <svg width="26" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10" stroke="#38bdf8" stroke-width="2.5"/>
+                    <path d="M12 2C14.5 4.5 15.5 8 15.5 12C15.5 16 14.5 19.5 12 22C9.5 19.5 8.5 16 8.5 12C8.5 8 9.5 4.5 12 2Z" stroke="#38bdf8" stroke-width="2"/>
+                    <line x1="2" y1="12" x2="22" y2="12" stroke="#38bdf8" stroke-width="2"/>
+                </svg>
+                <span>Sunny's 3D English Speech Stage</span>
+            </div>
+            <div class="mode-badge" id="mode-badge">超级童星演讲演播厅</div>
+        </div>
+
+        <!-- 2. 3D 剧场舞台主区域 -->
+        <div class="stage-area">
+            <!-- 剧场专业舞台光影与双路聚光灯 -->
+            <div class="stage-lighting"></div>
+            <div class="spotlight-beam-1"></div>
+            <div class="spotlight-beam-2"></div>
+
+            <!-- 2.1 左侧：Sunny 3D 演讲小舞台 -->
+            <div class="left-actor-stage">
+                <!-- 演讲者：高级骨骼仿真小男孩 Sunny -->
+                <svg id="sunny-presenter" width="260" height="300" viewBox="0 0 260 300">
+                    <g id="char-shadow">
+                        <!-- 舞台倒影/柔和阴影 -->
+                        <ellipse cx="130" cy="285" rx="55" ry="8" fill="url(#stage-shadow-grad)" opacity="0.75" />
+                    </g>
+                    
+                    <!-- 上躯干骨骼组：用于控制全身呼吸与弯腰鞠躬 (Pivot at Hip bottom: 130, 205) -->
+                    <g id="char-upper-body" style="transform-origin: 130px 205px; transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);">
+                        
+                        <!-- 脖子 -->
+                        <rect x="124" y="105" width="12" height="18" fill="url(#skin-grad)" rx="2"/>
+                        <rect x="124" y="114" width="12" height="9" fill="#e0a899" opacity="0.6"/> <!-- 脖颈立体投影 -->
+                        
+                        <!-- 头部组 (Pivot: 130, 105) -->
+                        <g id="char-head" style="transform-origin: 130px 105px; transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);">
+                            <!-- 脑后阴影头发，构建3D饱满度 -->
+                            <path d="M 86,85 C 68,75 70,45 88,34 C 102,18 122,18 130,18 C 138,18 158,18 172,34 C 190,45 192,75 174,85 C 170,95 165,102 160,105 C 145,107 115,105 100,105 C 95,102 90,95 86,85 Z" fill="url(#hair-back-grad)" stroke="#2a1a0f" stroke-width="1.5" />
+                            <!-- 耳朵 -->
+                            <circle cx="92" cy="80" r="10" fill="url(#skin-grad)"/>
+                            <circle cx="92" cy="80" r="6" fill="#e0a899"/>
+                            <circle cx="168" cy="80" r="10" fill="url(#skin-grad)"/>
+                            <circle cx="168" cy="80" r="6" fill="#e0a899"/>
+                            
+                            <!-- 3D渐变萌感脸庞 -->
+                            <circle cx="130" cy="80" r="38" fill="url(#skin-grad)"/>
+                            
+                            <!-- 刘海发片（前发，鞠躬时可受物理晃动） -->
+                            <g id="char-hair-fringe" style="transform-origin: 130px 42px; transition: transform 0.8s ease-in-out;">
+                                <!-- Base front hair volume (chocolate warm brown) -->
+                                <path d="M 85,62 C 92,45 108,35 130,38 C 152,35 168,45 175,62 C 179,72 174,80 170,72 Q 158,54 146,74 Q 138,58 130,82 Q 122,58 114,74 Q 102,54 90,72 C 86,80 81,72 85,62 Z" fill="url(#hair-front-grad)" stroke="#2a1a0f" stroke-width="1.5" />
+                                
+                                <!-- Cute sideburns (左、右鬓角) -->
+                                <path d="M 88,60 C 85,68 83,78 84,86 C 85,90 88,90 89,84 C 91,78 93,72 93,64 Z" fill="url(#hair-front-grad)" stroke="#2a1a0f" stroke-width="1" />
+                                <path d="M 172,60 C 175,68 177,78 176,86 C 175,90 172,90 171,84 C 169,78 167,72 167,64 Z" fill="url(#hair-front-grad)" stroke="#2a1a0f" stroke-width="1" />
+
+                                <!-- Hair highlights (头发光泽 - 增加高级感和软萌感) -->
+                                <path d="M 96,48 C 110,41 125,43 130,44 C 135,43 150,41 164,48 C 150,44 135,46 130,47 C 125,46 110,44 96,48 Z" fill="url(#hair-highlight-grad)" opacity="0.6" />
+                            </g>
+                            <!-- 呆毛 -->
+                            <path id="char-cowlick" d="M 130,30 Q 136,12 120,6 Q 126,20 130,30 Z" fill="url(#hair-front-grad)" stroke="#2a1a0f" stroke-width="1.5" />
+                            
+                            <!-- 智能眼睛系统 -->
+                            <!-- 1. 正常睁眼状态（含深邃瞳孔及3D玻璃反光高光） -->
+                            <g class="eyes-normal" id="eyes-normal">
+                                <!-- 左眼 -->
+                                <ellipse cx="114" cy="78" rx="7" ry="10" fill="#ffffff" stroke="#0f172a" stroke-width="1.5"/>
+                                <g id="left-pupil" style="transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);">
+                                    <ellipse cx="114" cy="78" rx="4.5" ry="7.5" fill="url(#eye-iris-grad)" />
+                                    <circle cx="112" cy="74" r="2.2" fill="white"/> <!-- 主高光 -->
+                                    <circle cx="116" cy="81" r="1" fill="white"/> <!-- 副反光 -->
+                                </g>
+                                <!-- 右眼 -->
+                                <ellipse cx="146" cy="78" rx="7" ry="10" fill="#ffffff" stroke="#0f172a" stroke-width="1.5"/>
+                                <g id="right-pupil" style="transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);">
+                                    <ellipse cx="146" cy="78" rx="4.5" ry="7.5" fill="url(#eye-iris-grad)" />
+                                    <circle cx="144" cy="74" r="2.2" fill="white"/>
+                                    <circle cx="148" cy="81" r="1" fill="white"/>
+                                </g>
+                            </g>
+                            <!-- 2. 弯眉笑眼状态 -->
+                            <g class="eyes-happy" id="eyes-happy" style="display:none;">
+                                <path d="M106 81 Q114 69 122 81" fill="none" stroke="#0f172a" stroke-width="4.5" stroke-linecap="round"/>
+                                <path d="M138 81 Q146 69 154 81" fill="none" stroke="#0f172a" stroke-width="4.5" stroke-linecap="round"/>
+                            </g>
+                            
+                            <!-- 绯红红晕 -->
+                            <ellipse cx="101" cy="89" rx="8" ry="4.5" fill="url(#blush-grad)" opacity="0.8"/>
+                            <ellipse cx="159" cy="89" rx="8" ry="4.5" fill="url(#blush-grad)" opacity="0.8"/>
+                            
+                            <!-- 飞扬的小剑眉（带骨骼微表情） -->
+                            <g id="char-eyebrows" style="transition: transform 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);">
+                                <path d="M105 65 C110 61, 118 61, 122 65" fill="none" stroke="#0f172a" stroke-width="3" stroke-linecap="round"/>
+                                <path d="M138 65 C142 61, 150 61, 155 65" fill="none" stroke="#0f172a" stroke-width="3" stroke-linecap="round"/>
+                            </g>
+                            
+                            <!-- 口型发音变化系统 (High-Fidelity Lip-Sync Mouths) -->
+                            <g id="boy-mouth-group">
+                                <!-- 微笑闭嘴 (默认) -->
+                                <path id="mouth-smile" d="M120 92 Q130 100 140 92" fill="none" stroke="#0f172a" stroke-width="3.5" stroke-linecap="round"/>
+                                
+                                <!-- 大张口 (A型，露出洁白牙齿和粉嫩舌头) -->
+                                <g id="mouth-talk-large" style="display:none;">
+                                    <path d="M118 90 Q130 110 142 90 Z" fill="#991b1b" stroke="#0f172a" stroke-width="2.5" stroke-linejoin="round"/>
+                                    <path d="M121 91 L139 91 Q130 96 121 91" fill="#ffffff" />
+                                    <path d="M124 102 Q130 96 136 102 C134 107, 126 107, 124 102 Z" fill="#f43f5e" />
+                                </g>
+                                
+                                <!-- 圆张口 (O型，极佳深度立体感) -->
+                                <g id="mouth-talk-round" style="display:none;">
+                                    <ellipse cx="130" cy="97" rx="6" ry="8" fill="#7f1d1d" stroke="#0f172a" stroke-width="2.5"/>
+                                    <ellipse cx="130" cy="101" rx="4.5" ry="3" fill="#f43f5e"/>
+                                </g>
+                                
+                                <!-- 扁口 (E型，露出部分门牙) -->
+                                <g id="mouth-talk-small" style="display:none;">
+                                    <path d="M121 92 Q130 101 139 92 Z" fill="#991b1b" stroke="#0f172a" stroke-width="2.5"/>
+                                    <line x1="123" y1="92" x2="137" y2="92" stroke="#ffffff" stroke-width="2"/>
+                                </g>
+                            </g>
+                        </g>
+                        
+                        <!-- 演讲西服：3D立领英伦 Polo 衫配大红蝴蝶结 -->
+                        <!-- 衬衫主体 -->
+                        <path d="M100 123 Q130 114 160 123 L166 205 L94 205 Z" fill="url(#shirt-grad)" stroke="#1e3a8a" stroke-width="1.5"/>
+                        <path d="M100 123 Q130 114 160 123 L145 155 L115 155 Z" fill="#1e3a8a" opacity="0.15"/> <!-- 领下阴影 -->
+                        
+                        <!-- Polo 立领 -->
+                        <polygon points="102,123 120,142 118,123" fill="#ffffff" stroke="#94a3b8" stroke-width="1"/>
+                        <polygon points="158,123 140,142 142,123" fill="#ffffff" stroke="#94a3b8" stroke-width="1"/>
+                        
+                        <!-- 红色大领结 (含鞠躬悬垂重力变形机制) -->
+                        <g id="bowtie" style="transform-origin: 130px 130px; transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);">
+                            <polygon points="130,131 115,121 115,141" fill="url(#bowtie-grad)" stroke="#9f1239" stroke-width="1" />
+                            <polygon points="130,131 145,121 145,141" fill="url(#bowtie-grad)" stroke="#9f1239" stroke-width="1" />
+                            <rect x="125" y="126" width="10" height="10" rx="3" fill="#9f1239" stroke="#4c0519" stroke-width="0.5"/>
+                        </g>
+
+                        <!-- ================= 双关节手臂骨骼系统 ================= -->
+                        <!-- 2.1.1 左手臂 (屏幕左侧, 演员右手。Shoulder Hinge at 94, 135) -->
+                        <g id="left-shoulder" style="transform-origin: 94px 135px; transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);">
+                            <!-- 大臂骨 -->
+                            <line x1="94" y1="135" x2="76" y2="175" stroke="#e0a899" stroke-width="18" stroke-linecap="round" />
+                            <line x1="94" y1="135" x2="76" y2="175" stroke="url(#skin-grad)" stroke-width="14" stroke-linecap="round" />
+                            <line x1="94" y1="135" x2="84" y2="157" stroke="url(#shirt-grad)" stroke-width="18" stroke-linecap="round" /> <!-- 袖口 -->
+                            
+                            <!-- 肘关节 (Elbow Hinge at 76, 175) -->
+                            <g id="left-elbow" style="transform-origin: 76px 175px; transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);">
+                                <!-- 小臂骨 -->
+                                <line x1="76" y1="175" x2="60" y2="215" stroke="#e0a899" stroke-width="14" stroke-linecap="round" />
+                                <line x1="76" y1="175" x2="60" y2="215" stroke="url(#skin-grad)" stroke-width="11" stroke-linecap="round" />
+                                
+                                <!-- 腕关节及手掌 (Wrist Hinge at 60, 215) -->
+                                <g id="left-hand" style="transform-origin: 60px 215px; transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);">
+                                    <path d="M 60 215 C 54 213, 46 215, 43 222 C 41 228, 48 234, 53 234 C 56 234, 58 236, 56 240 C 55 243, 62 243, 65 237 C 68 231, 66 221, 60 215 Z" fill="url(#skin-grad)" stroke="#e0a899" stroke-width="0.75" />
+                                </g>
+                            </g>
+                        </g>
+
+                        <!-- 2.1.2 右手臂 (屏幕右侧, 演员左手。Shoulder Hinge at 166, 135) -->
+                        <g id="right-shoulder" style="transform-origin: 166px 135px; transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);">
+                            <!-- 大臂骨 -->
+                            <line x1="166" y1="135" x2="184" y2="175" stroke="#e0a899" stroke-width="18" stroke-linecap="round" />
+                            <line x1="166" y1="135" x2="184" y2="175" stroke="url(#skin-grad)" stroke-width="14" stroke-linecap="round" />
+                            <line x1="166" y1="135" x2="176" y2="157" stroke="url(#shirt-grad)" stroke-width="18" stroke-linecap="round" /> <!-- 袖口 -->
+                            
+                            <!-- 肘关节 (Elbow Hinge at 184, 175) -->
+                            <g id="right-elbow" style="transform-origin: 184px 175px; transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);">
+                                <!-- 小臂骨 -->
+                                <line x1="184" y1="175" x2="200" y2="215" stroke="#e0a899" stroke-width="14" stroke-linecap="round" />
+                                <line x1="184" y1="175" x2="200" y2="215" stroke="url(#skin-grad)" stroke-width="11" stroke-linecap="round" />
+                                
+                                <!-- 腕关节及手掌 (Wrist Hinge at 200, 215) -->
+                                <g id="right-hand" style="transform-origin: 200px 215px; transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);">
+                                    <path d="M 200 215 C 206 213, 214 215, 217 222 C 219 228, 212 234, 207 234 C 204 234, 202 236, 204 240 C 205 243, 198 243, 195 237 C 192 231, 194 221, 200 215 Z" fill="url(#skin-grad)" stroke="#e0a899" stroke-width="0.75" />
+                                </g>
+                            </g>
+                        </g>
+                    </g> <!-- 上躯干结束 -->
+
+                    <!-- 下半身（裤子与高精球鞋） -->
+                    <g id="char-lower-body">
+                        <!-- 西装长裤 -->
+                        <rect x="108" y="205" width="44" height="52" fill="url(#pants-grad)" rx="4"/>
+                        <line x1="130" y1="210" x2="130" y2="257" stroke="#0f172a" stroke-width="3" stroke-linecap="round"/>
+                        
+                        <!-- 红色篮球战靴 -->
+                        <!-- 左鞋 -->
+                        <g id="shoe-left">
+                            <path d="M96 265 L122 265 C124 265, 126 269, 124 273 L94 273 C92 269, 94 265, 96 265 Z" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+                            <path d="M96 257 C96 251, 102 249, 114 249 C122 249, 124 253, 124 265 L96 265 Z" fill="url(#shoe-grad)" stroke="#9f1239" stroke-width="1"/>
+                            <line x1="104" y1="253" x2="114" y2="253" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+                            <line x1="106" y1="258" x2="116" y2="258" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+                            <circle cx="98" cy="261" r="3" fill="#ffffff" opacity="0.8"/>
+                        </g>
+                        <!-- 右鞋 -->
+                        <g id="shoe-right">
+                            <path d="M138 265 L164 265 C166 265, 168 269, 166 273 L136 273 C134 269, 136 265, 138 265 Z" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+                            <path d="M138 257 C138 251, 144 249, 156 249 C164 249, 166 253, 166 265 L138 265 Z" fill="url(#shoe-grad)" stroke="#9f1239" stroke-width="1"/>
+                            <line x1="146" y1="253" x2="156" y2="253" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+                            <line x1="144" y1="258" x2="154" y2="258" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+                            <circle cx="162" cy="261" r="3" fill="#ffffff" opacity="0.8"/>
+                        </g>
+                    </g>
+
+                    <!-- SVG 高级渲染渐变定义 -->
+                    <defs>
+                        <linearGradient id="hair-back-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#2a1a0f"/>
+                            <stop offset="100%" stop-color="#140d07"/>
+                        </linearGradient>
+                        <linearGradient id="hair-front-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#543720"/>
+                            <stop offset="100%" stop-color="#301e12"/>
+                        </linearGradient>
+                        <linearGradient id="hair-highlight-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#a37554"/>
+                            <stop offset="100%" stop-color="#543720" stop-opacity="0"/>
+                        </linearGradient>
+                        <linearGradient id="skin-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#fee8d6" />
+                            <stop offset="100%" stop-color="#fecdb3" />
+                        </linearGradient>
+                        <radialGradient id="blush-grad" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" stop-color="#fca5a5" stop-opacity="1"/>
+                            <stop offset="100%" stop-color="#fca5a5" stop-opacity="0"/>
+                        </radialGradient>
+                        <linearGradient id="eye-iris-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#1e293b"/>
+                            <stop offset="100%" stop-color="#0284c7"/>
+                        </linearGradient>
+                        <linearGradient id="shirt-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#1d4ed8"/>
+                            <stop offset="50%" stop-color="#2563eb"/>
+                            <stop offset="100%" stop-color="#1e40af"/>
+                        </linearGradient>
+                        <linearGradient id="pants-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#475569"/>
+                            <stop offset="100%" stop-color="#1e293b"/>
+                        </linearGradient>
+                        <linearGradient id="bowtie-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#f43f5e"/>
+                            <stop offset="100%" stop-color="#be123c"/>
+                        </linearGradient>
+                        <linearGradient id="shoe-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#ef4444"/>
+                            <stop offset="100%" stop-color="#9f1239"/>
+                        </linearGradient>
+                        <radialGradient id="stage-shadow-grad" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" stop-color="#020617" stop-opacity="0.85"/>
+                            <stop offset="100%" stop-color="#020617" stop-opacity="0"/>
+                        </radialGradient>
+                    </defs>
+                </svg>
+
+                <!-- 浮雕木纹小舞台 -->
+                <div class="wood-podium"></div>
+            </div>
+
+            <!-- 2.2 右侧：智慧多媒体投影荧幕 -->
+            <div class="right-projector-screen" id="smart-projector">
+                <div class="projector-slides">
+                    
+                    <!-- Slide 1: Cover -->
+                    <div class="projector-slide active" data-index="0" data-theme="day" data-gesture="wave" data-expression="happy">
+                        <div class="slide-graphic">
+                            <svg width="160" height="160" viewBox="0 0 200 200" class="pulse shake">
+                                <circle cx="100" cy="100" r="80" fill="#38bdf8" />
+                                <path d="M50 70C60 60 80 65 90 80C100 95 95 110 80 115C65 120 40 100 50 70Z" fill="#4ade80" />
+                                <path d="M120 60C130 55 150 70 145 90C140 110 125 105 115 95C105 85 110 65 120 60Z" fill="#4ade80" />
+                                <path d="M90 130C105 120 130 130 140 145C130 160 100 165 85 150C70 135 75 140 90 130Z" fill="#4ade80" />
+                                <circle cx="85" cy="95" r="7" fill="#0f172a" />
+                                <circle cx="115" cy="95" r="7" fill="#0f172a" />
+                                <circle cx="83" cy="92" r="2.5" fill="white" />
+                                <circle cx="113" cy="92" r="2.5" fill="white" />
+                                <circle cx="75" cy="105" r="8" fill="#fca5a5" opacity="0.6" />
+                                <circle cx="125" cy="105" r="8" fill="#fca5a5" opacity="0.6" />
+                                <path d="M95 105Q100 112 105 105" stroke="#0f172a" stroke-width="4" stroke-linecap="round" fill="none" />
+                            </svg>
+                        </div>
+                        <div class="slide-text">
+                            <div class="slide-en-txt">"My Speech: The Earth"</div>
+                            <div style="font-size: 15px; color: #64748b; margin-top: 5px; font-weight: bold;">Presented by Sunny</div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 2: Welcome -->
+                    <div class="projector-slide" data-index="1" data-theme="day" data-gesture="welcome" data-expression="normal">
+                        <div class="slide-graphic">
+                            <svg width="180" height="150" viewBox="0 0 220 200">
+                                <g class="pulse" style="transform-origin: 105px 90px; animation-duration: 4s;">
+                                    <ellipse cx="105" cy="90" rx="58" ry="42" fill="none" stroke="#fde047" stroke-width="5" opacity="0.25" />
+                                    <ellipse cx="105" cy="90" rx="58" ry="42" fill="none" stroke="#fbbf24" stroke-width="2.5" stroke-dasharray="6 8" stroke-linecap="round" opacity="0.7" />
+                                </g>
+                                <g class="pulse" style="transform-origin: 155px 55px;">
+                                    <circle cx="155" cy="55" r="24" fill="#fbbf24" stroke="#f59e0b" stroke-width="2" />
+                                    <line x1="155" y1="23" x2="155" y2="15" stroke="#f59e0b" stroke-width="3" stroke-linecap="round" />
+                                    <line x1="155" y1="87" x2="155" y2="95" stroke="#f59e0b" stroke-width="3" stroke-linecap="round" />
+                                    <line x1="123" y1="55" x2="115" y2="55" stroke="#f59e0b" stroke-width="3" stroke-linecap="round" />
+                                    <line x1="187" y1="55" x2="195" y2="55" stroke="#f59e0b" stroke-width="3" stroke-linecap="round" />
+                                    <circle cx="147" cy="51" r="2.5" fill="#d97706" />
+                                    <circle cx="163" cy="51" r="2.5" fill="#d97706" />
+                                    <path d="M151 59Q155 63 159 59" stroke="#d97706" stroke-width="2" stroke-linecap="round" fill="none" />
+                                </</g>
+                                <g class="shake" style="transform-origin: 55px 55px;">
+                                    <path d="M65 30 A 25 25 0 1 0 65 80 A 18 18 0 1 1 65 30 Z" fill="#fde047" stroke="#f59e0b" stroke-width="1.5" />
+                                    <path d="M47 51Q50 54 53 51" stroke="#475569" stroke-width="1.5" stroke-linecap="round" fill="none" />
+                                    <circle cx="46" cy="57" r="3" fill="#ef4444" opacity="0.5" />
+                                </g>
+                                <g class="pulse" style="transform-origin: 105px 125px;">
+                                    <circle cx="105" cy="125" r="46" fill="#38bdf8" />
+                                    <path d="M80 115C85 105 100 110 105 120C110 130 95 135 85 130Z" fill="#4ade80" />
+                                    <path d="M125 135C135 125 148 135 142 145C135 155 120 150 118 140Z" fill="#4ade80" />
+                                    <circle cx="93" cy="122" r="4.5" fill="#0f172a" />
+                                    <circle cx="117" cy="122" r="4.5" fill="#0f172a" />
+                                    <circle cx="91" cy="119" r="1.5" fill="white" />
+                                    <circle cx="115" cy="119" r="1.5" fill="white" />
+                                    <circle cx="85" cy="128" r="5" fill="#fca5a5" opacity="0.6"/>
+                                    <circle cx="125" cy="128" r="5" fill="#fca5a5" opacity="0.6"/>
+                                    <path d="M101 128Q105 133 109 128" stroke="#0f172a" stroke-width="3" stroke-linecap="round" fill="none" />
+                                </g>
+                            </svg>
+                        </div>
+                        <div class="slide-text">
+                            <div class="slide-en-txt">"Hello everyone!<br>Today I want to talk about the Earth."</div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 3: Big blue ball -->
+                    <div class="projector-slide" data-index="2" data-theme="seas-land" data-gesture="circle" data-expression="happy">
+                        <div class="slide-graphic">
+                            <svg width="150" height="150" viewBox="0 0 220 220">
+                                <circle cx="110" cy="110" r="82" fill="#60a5fa" opacity="0.2" class="pulse" style="transform-origin: 110px 110px;" />
+                                <circle cx="110" cy="110" r="76" fill="#38bdf8" opacity="0.35" class="pulse" style="transform-origin: 110px 110px; animation-delay: 0.5s;" />
+                                <g class="rotate-earth" style="transform-origin: 110px 110px;">
+                                    <circle cx="110" cy="110" r="70" fill="#1d4ed8" />
+                                    <path d="M70 60C85 50 100 65 95 85C90 105 65 100 55 85C45 70 55 70 70 60Z" fill="#22c55e" />
+                                    <path d="M130 80C140 60 170 70 165 95C160 120 130 110 120 100C110 90 120 100 130 80Z" fill="#22c55e" />
+                                    <path d="M80 130C100 120 125 125 140 145C120 165 90 160 75 150C60 140 60 140 80 130Z" fill="#22c55e" />
+                                    <circle cx="75" cy="108" r="8" fill="#4ade80" />
+                                    <circle cx="145" cy="125" r="7" fill="#4ade80" />
+                                    <circle cx="110" cy="65" r="6" fill="#4ade80" />
+                                </g>
+                                <path d="M55 55A65 65 0 0 1 165 55" stroke="white" stroke-width="6" stroke-linecap="round" opacity="0.3" fill="none" />
+                            </svg>
+                        </div>
+                        <div class="slide-text">
+                            <div class="slide-en-txt">"The Earth is a big blue ball.<br>It has blue seas and green land."</div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 4: We live on the Earth -->
+                    <div class="projector-slide" data-index="3" data-theme="day" data-gesture="welcome" data-expression="normal">
+                        <div class="slide-graphic">
+                            <svg width="180" height="150" viewBox="0 0 240 200">
+                                <path d="M10 170Q120 110 230 170" fill="none" stroke="#22c55e" stroke-width="12" stroke-linecap="round" />
+                                <path d="M10 170Q120 110 230 170 L230 200 L10 200 Z" fill="#eff6ff" />
+                                <g class="pulse" style="transform-origin: 35px 135px;">
+                                    <rect x="33" y="125" width="4" height="30" fill="#78350f" />
+                                    <circle cx="35" cy="115" r="12" fill="#15803d" />
+                                </g>
+                                <g class="shake" style="transform-origin: 75px 125px;">
+                                    <rect x="60" y="120" width="30" height="30" fill="#fca5a5" rx="2" />
+                                    <polygon points="55,120 75,100 95,120" fill="#ef4444" />
+                                    <rect x="70" y="132" width="10" height="18" fill="#fef08a" />
+                                </g>
+                                <g class="pulse" style="transform-origin: 135px 120px; animation-delay: 0.5s;">
+                                    <rect x="109" y="105" width="12" height="18" rx="3" fill="#0284c7" />
+                                    <circle cx="115" cy="98" r="7" fill="#fed7aa" />
+                                    <polygon points="148,126 162,126 155,108" fill="#f43f5e" />
+                                    <circle cx="155" cy="102" r="6.5" fill="#fed7aa" />
+                                    <rect x="131" y="115" width="8" height="11" rx="2" fill="#fbbf24" />
+                                    <circle cx="135" cy="110" r="5" fill="#fed7aa" />
+                                    <path d="M121 108Q127 116 131 118" fill="none" stroke="#fed7aa" stroke-width="2.5" stroke-linecap="round" />
+                                    <path d="M149 110Q142 116 139 118" fill="none" stroke="#fed7aa" stroke-width="2.5" stroke-linecap="round" />
+                                </g>
+                            </svg>
+                        </div>
+                        <div class="slide-text">
+                            <div class="slide-en-txt">"We live on the Earth."</div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 5: Stars and moon -->
+                    <div class="projector-slide" data-index="4" data-theme="night" data-gesture="point" data-expression="normal">
+                        <div class="slide-graphic">
+                            <svg width="180" height="150" viewBox="0 0 220 200">
+                                <path d="M150 50 A 55 55 0 1 0 150 150 A 45 45 0 1 1 150 50 Z" fill="#fde047" class="shake" style="transform-origin: 110px 100px;"/>
+                                <polygon points="40,30 43,38 52,38 45,43 47,51 40,46 33,51 35,43 28,38 37,38" fill="#fef08a" class="twinkle" />
+                                <polygon points="50,130 52,135 57,135 53,138 54,143 50,140 46,143 47,138 43,135 48,135" fill="#fef08a" class="twinkle" style="animation-delay: 0.3s;" />
+                                <polygon points="110,25 111.5,29 115,29 112,31 113,35 110,33 107,35 108,31 105,29 108.5,29" fill="#fde047" class="twinkle" style="animation-delay: 0.6s;" />
+                                <circle cx="25" cy="90" r="2.5" fill="#fff" class="twinkle" style="animation-delay: 0.2s;" />
+                                <circle cx="85" cy="65" r="2" fill="#fff" class="twinkle" style="animation-delay: 0.7s;" />
+                            </svg>
+                        </div>
+                        <div class="slide-text">
+                            <div class="slide-en-txt">"We can see many stars<br>and the moon at night."</div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 6: The Sun -->
+                    <div class="projector-slide" data-index="5" data-theme="day" data-gesture="point" data-expression="happy">
+                        <div class="slide-graphic">
+                            <svg width="150" height="150" viewBox="0 0 200 200">
+                                <g class="pulse" style="transform-origin: 100px 100px;">
+                                    <circle cx="100" cy="100" r="50" fill="#f97316" />
+                                    <circle cx="100" cy="100" r="42" fill="#fbbf24" />
+                                    <circle cx="85" cy="95" r="6" fill="#1e293b" />
+                                    <circle cx="115" cy="95" r="6" fill="#1e293b" />
+                                    <path d="M90 110Q100 125 110 110 Z" fill="#e11d48" />
+                                </g>
+                                <path d="M100 15L100 35M100 165L100 185M35 100L15 100M165 100L185 100" stroke="#f97316" stroke-width="6" stroke-linecap="round" class="twinkle" />
+                            </svg>
+                        </div>
+                        <div class="slide-text">
+                            <div class="slide-en-txt">"The sun is hot and bright.<br>It gives us light and warm sunshine."</div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 7: Save Earth -->
+                    <div class="projector-slide" data-index="6" data-theme="day" data-gesture="love" data-expression="happy">
+                        <div class="slide-graphic">
+                            <svg width="180" height="150" viewBox="0 0 220 200">
+                                <g class="shake" style="transform-origin: 35px 45px;"><path d="M35 52 C 20 32, 15 12, 35 27 C 55 12, 50 32, 35 52 Z" fill="#ec4899" opacity="0.8" /></g>
+                                <g class="pulse" style="transform-origin: 185px 45px;"><path d="M185 52 C 170 32, 165 12, 185 27 C 205 12, 200 32, 185 52 Z" fill="#f43f5e" opacity="0.8" /></g>
+                                <g class="pulse" style="transform-origin: 110px 105px;">
+                                    <circle cx="110" cy="105" r="54" fill="#38bdf8" />
+                                    <path d="M70 75C80 60 95 65 100 80C105 95 95 110 80 115C65 120 55 95 70 75Z" fill="#4ade80" />
+                                    <circle cx="92" cy="98" r="5" fill="#0f172a" />
+                                    <circle cx="128" cy="98" r="5" fill="#0f172a" />
+                                    <circle cx="82" cy="108" r="6" fill="#fca5a5" opacity="0.65" />
+                                    <circle cx="138" cy="108" r="6" fill="#fca5a5" opacity="0.65" />
+                                    <path d="M104 109Q110 115 116 109" stroke="#0f172a" stroke-width="3" stroke-linecap="round" fill="none" />
+                                </g>
+                                <g class="pulse" style="transform-origin: 110px 145px; animation-delay: 0.1s;">
+                                    <path d="M110 152 C 92 130, 87 110, 110 125 C 133 110, 128 130, 110 152 Z" fill="#ff4b5c" stroke="#e11d48" stroke-width="2.5" />
+                                    <circle cx="91" cy="138" r="5.5" fill="white" stroke="#1e293b" stroke-width="1.5" />
+                                    <circle cx="129" cy="138" r="5.5" fill="white" stroke="#1e293b" stroke-width="1.5" />
+                                </g>
+                            </svg>
+                        </div>
+                        <div class="slide-text">
+                            <div class="slide-en-txt">"We have only one Earth.<br>I love the Earth."</div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 8: Thank You -->
+                    <div class="projector-slide" data-index="7" data-theme="day" data-gesture="bow" data-expression="happy">
+                        <div class="slide-graphic">
+                            <svg width="150" height="150" viewBox="0 0 200 200" class="shake">
+                                <circle cx="100" cy="100" r="30" fill="#fcd34d" stroke="#f59e0b" stroke-width="3" />
+                                <circle cx="100" cy="55" r="22" fill="#f43f5e" opacity="0.9" />
+                                <circle cx="100" cy="145" r="22" fill="#f43f5e" opacity="0.9" />
+                                <circle cx="55" cy="100" r="22" fill="#f43f5e" opacity="0.9" />
+                                <circle cx="145" cy="100" r="22" fill="#f43f5e" opacity="0.9" />
+                                <circle cx="100" cy="100" r="30" fill="#fde047" />
+                                <circle cx="90" cy="95" r="3" fill="#b45309" />
+                                <circle cx="110" cy="95" r="3" fill="#b45309" />
+                                <path d="M93 105Q100 112 107 105" stroke="#b45309" stroke-width="3" stroke-linecap="round" fill="none" />
+                            </svg>
+                        </div>
+                        <div class="slide-text">
+                            <div class="slide-en-txt" style="font-size: 32px; color: #ec4899; font-family: 'Fredoka One', sans-serif;">"Thank you!"</div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="screen-bezel-bottom"></div>
+            </div>
+
+            <!-- 2.3 悬浮智慧提词板 HUD -->
+            <div class="subtitle-overlay-panel" id="subtitle-panel">
+                <div class="subtitle-en" id="sub-en">3D Presenter Ready! Click START to run.</div>
+                <div class="subtitle-cn" id="sub-cn">超级AI模拟演讲台加载完毕！点击下方按钮开启拟真自动演播。</div>
+            </div>
+        </div>
+
+        <!-- 3. 底部控制台 -->
+        <div class="control-console">
+            <!-- 演播开启大红按钮 -->
+            <button class="console-btn btn-success" id="main-play-btn" onclick="toggleAutoShow()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" id="play-btn-icon"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                <span id="play-btn-text">开启全程自动演讲</span>
+            </button>
+
+            <!-- 多维辅助控制 -->
+            <div class="btn-group">
+                <button class="console-btn btn-secondary" onclick="prevSlide()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                    <span>上一页</span>
+                </button>
+                <button class="console-btn btn-secondary" onclick="nextSlide()">
+                    <span>下一页</span>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </button>
+                <button class="console-btn btn-secondary" onclick="repeatCurrent()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                    <span>单句精读</span>
+                </button>
+            </div>
+
+            <!-- HUD 显示开关 -->
+            <label class="checkbox-container">
+                <input type="checkbox" id="subtitle-toggle" checked onchange="toggleSubtitles()">
+                <span>显示智能提词板</span>
+            </label>
+        </div>
+    </div>
+
+    <!-- 演讲大赛核心系统逻辑控制器 -->
+    <script>
+        let currentSlide = 0;
+        let isPlaying = false;
+        let speechUtterance = null;
+        let lipSyncInterval = null;
+        
+        const slides = document.querySelectorAll('.projector-slide');
+        const presentation = document.getElementById('smart-projector');
+        const totalSlides = slides.length;
+        const subEn = document.getElementById('sub-en');
+        const subCn = document.getElementById('sub-cn');
+        const actor = document.getElementById('sunny-presenter');
+
+        // 双语演讲提词字幕数据库（带演讲呼吸节奏控制点）
+        const speechSubtitles = {
+            0: {
+                en: "My Speech: The Earth. Presented by Sunny.",
+                cn: "我的演讲：《地球》。演讲者：Sunny。"
+            },
+            1: {
+                en: "Hello, everyone! Today, I want to talk... about the Earth.",
+                cn: "大家好！今天我想和大家聊聊我们的地球。"
+            },
+            2: {
+                en: "The Earth is a big... blue... ball! It has blue seas, and green land.",
+                cn: "地球是一个大大的、蓝色的球！它有蓝色的海洋和绿色的陆地。"
+            },
+            3: {
+                en: "We... live on the Earth!",
+                cn: "我们就住在这个美丽的地球上！"
+            },
+            4: {
+                en: "We can see many stars... and the moon... at night.",
+                cn: "在静悄悄的夜晚，我们可以看到满天的繁星和弯弯的月亮。"
+            },
+            5: {
+                en: "The sun is hot... and bright! It gives us light, and warm sunshine.",
+                cn: "太阳是火热而明亮的。它带给我们光明，还有暖洋洋的阳光。"
+            },
+            6: {
+                en: "We have only... one Earth. I... love the Earth!",
+                cn: "我们只有一个地球。我好爱我们的地球！"
+            },
+            7: {
+                en: "Thank you, everyone!",
+                cn: "谢谢大家！"
+            }
+        };
+
+        // 语音引擎控制器 (Web Speech Synthesis)
+        const synth = window.speechSynthesis;
+
+        // 触发声音自动演播
+        function toggleAutoShow() {
+            if (isPlaying) {
+                stopSpeech();
+            } else {
+                startSpeech();
+            }
+        }
+
+        // 启动演讲
+        function startSpeech() {
+            isPlaying = true;
+            document.getElementById('mode-badge').textContent = "拟真演播中";
+            document.getElementById('play-btn-text').textContent = "暂停AI演播";
+            document.getElementById('play-btn-icon').innerHTML = '<rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect>';
+            document.getElementById('main-play-btn').classList.add('playing');
+            
+            deliverCurrentSlide();
+        }
+
+        // 终止/暂停演讲
+        function stopSpeech() {
+            isPlaying = false;
+            document.getElementById('mode-badge').textContent = "演播已暂停";
+            document.getElementById('play-btn-text').textContent = "开启全程自动演讲";
+            document.getElementById('play-btn-icon').innerHTML = '<polygon points="5 3 19 12 5 21 5 3"></polygon>';
+            document.getElementById('main-play-btn').classList.remove('playing');
+            
+            if (synth) {
+                synth.cancel();
+            }
+            stopLipSync();
+            resetFaceToNormal();
+        }
+
+        // 核心演播处理器：让小男孩朗读并配合全套表情、动作和切页
+        function deliverCurrentSlide() {
+            if (!isPlaying) return;
+
+            const slide = slides[currentSlide];
+            const gesture = slide.getAttribute('data-gesture');
+            const expression = slide.getAttribute('data-expression');
+            const textToSpeak = speechSubtitles[currentSlide].en;
+
+            // 更新字幕 HUD
+            subEn.textContent = speechSubtitles[currentSlide].en;
+            subCn.textContent = speechSubtitles[currentSlide].cn;
+
+            // 骨骼类控制
+            actor.className = ""; 
+            actor.classList.add(`act-${gesture}`);
+
+            if (expression === 'happy') {
+                document.getElementById('eyes-normal').style.display = 'none';
+                document.getElementById('eyes-happy').style.display = 'block';
+            } else {
+                document.getElementById('eyes-normal').style.display = 'block';
+                document.getElementById('eyes-happy').style.display = 'none';
+            }
+
+            // 发音控制
+            if (synth) {
+                synth.cancel();
+                
+                speechUtterance = new SpeechSynthesisUtterance(textToSpeak);
+                speechUtterance.lang = 'en-US';
+
+                const voices = synth.getVoices();
+                let preferredVoice = voices.find(v => 
+                    v.name.includes('Kevin') || v.name.includes('Justin') || v.name.includes('Ana')
+                );
+
+                if (!preferredVoice) {
+                    preferredVoice = voices.find(v => v.name.includes('Google US English') && !v.name.includes('Male')) ||
+                                     voices.find(v => v.name.includes('Samantha') || v.name.includes('Aria') || v.name.includes('Zira'));
+                }
+
+                if (preferredVoice) {
+                    speechUtterance.voice = preferredVoice;
+                }
+
+                speechUtterance.rate = 0.85;  // 稍慢且稳重的童心感
+                speechUtterance.pitch = 0.88; // 压低音调，化为质感小正太音
+
+                speechUtterance.onstart = () => {
+                    startLipSync();
+                };
+
+                speechUtterance.onend = () => {
+                    stopLipSync();
+                    resetFaceToNormal();
+                    
+                    if (isPlaying) {
+                        if (currentSlide === totalSlides - 1) {
+                            // 最后一页，完美躬身落幕！
+                            actor.className = "";
+                            actor.classList.add('act-bow');
+                            document.getElementById('eyes-happy').style.display = 'block';
+                            document.getElementById('eyes-normal').style.display = 'none';
+                            setTimeout(() => {
+                                stopSpeech();
+                            }, 3500);
+                        } else {
+                            setTimeout(() => {
+                                if (isPlaying) {
+                                    nextSlide();
+                                    deliverCurrentSlide();
+                                }
+                            }, 1800);
+                        }
+                    }
+                };
+
+                speechUtterance.onerror = () => {
+                    stopLipSync();
+                    resetFaceToNormal();
+                };
+
+                synth.speak(speechUtterance);
+            }
+        }
+
+        // 自然口型与微表情协同系统 (Expression Management Sync Engine)
+        function startLipSync() {
+            stopLipSync();
+            const mouths = ['mouth-smile', 'mouth-talk-large', 'mouth-talk-round', 'mouth-talk-small'];
+            const eyebrows = document.getElementById('char-eyebrows');
+            
+            lipSyncInterval = setInterval(() => {
+                // 随机嘴唇律动
+                mouths.forEach(m => document.getElementById(m).style.display = 'none');
+                const randomMouth = mouths[Math.floor(Math.random() * (mouths.length - 1)) + 1];
+                document.getElementById(randomMouth).style.display = 'block';
+
+                // 拟真微表情协同：说话时眉毛跟随发生微量高低跳动，极其传神
+                if (Math.random() > 0.5) {
+                    eyebrows.style.transform = 'translateY(-2px)';
+                } else {
+                    eyebrows.style.transform = 'translateY(0)';
+                }
+            }, 100);
+        }
+
+        function stopLipSync() {
+            if (lipSyncInterval) {
+                clearInterval(lipSyncInterval);
+                lipSyncInterval = null;
+            }
+            const mouths = ['mouth-smile', 'mouth-talk-large', 'mouth-talk-round', 'mouth-talk-small'];
+            mouths.forEach(m => document.getElementById(m).style.display = 'none');
+            document.getElementById('mouth-smile').style.display = 'block';
+            document.getElementById('char-eyebrows').style.transform = 'translateY(0)';
+        }
+
+        function resetFaceToNormal() {
+            document.getElementById('eyes-normal').style.display = 'block';
+            document.getElementById('eyes-happy').style.display = 'none';
+            // 眼珠回归正常中心
+            document.getElementById('left-pupil').style.transform = 'translate(0, 0)';
+            document.getElementById('right-pupil').style.transform = 'translate(0, 0)';
+        }
+
+        // 幻灯片渲染更新器 (Slide & Scene Sync)
+        function updateSlide() {
+            slides.forEach((slide, idx) => {
+                if (idx === currentSlide) {
+                    slide.classList.add('active');
+                } else {
+                    slide.classList.remove('active');
+                }
+            });
+
+            const activeSlide = slides[currentSlide];
+            const theme = activeSlide.getAttribute('data-theme');
+            
+            // 全景环境灯光特效匹配
+            if (theme === 'night') {
+                presentation.style.backgroundColor = '#05041a';
+                presentation.style.border = '10px solid #1e1b4b';
+                document.body.style.background = '#020210';
+            } else if (theme === 'seas-land') {
+                presentation.style.backgroundColor = '#ecfdf5';
+                presentation.style.border = '10px solid #10b981';
+                document.body.style.background = 'linear-gradient(135deg, #bae6fd 0%, #a7f3d0 100%)';
+            } else {
+                presentation.style.backgroundColor = '#ffffff';
+                presentation.style.border = '10px solid #4b5563';
+                document.body.style.background = '#030214';
+            }
+
+            if (!isPlaying) {
+                subEn.textContent = speechSubtitles[currentSlide].en;
+                subCn.textContent = speechSubtitles[currentSlide].cn;
+                
+                // 静态手动切换时同步骨骼动作
+                const gesture = activeSlide.getAttribute('data-gesture');
+                actor.className = ""; 
+                actor.classList.add(`act-${gesture}`);
+                
+                // 眼神智能跟踪
+                if (gesture === 'point') {
+                    document.getElementById('left-pupil').style.transform = 'translate(3.2px, -1.2px)';
+                    document.getElementById('right-pupil').style.transform = 'translate(3.2px, -1.2px)';
+                } else {
+                    document.getElementById('left-pupil').style.transform = 'translate(0, 0)';
+                    document.getElementById('right-pupil').style.transform = 'translate(0, 0)';
+                }
+            }
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++;
+            } else {
+                currentSlide = 0; 
+            }
+            updateSlide();
+            if (isPlaying) {
+                deliverCurrentSlide();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+            } else {
+                currentSlide = totalSlides - 1;
+            }
+            updateSlide();
+            if (isPlaying) {
+                deliverCurrentSlide();
+            }
+        }
+
+        function repeatCurrent() {
+            const tempState = isPlaying;
+            stopSpeech();
+            isPlaying = true;
+            deliverCurrentSlide();
+            isPlaying = tempState; 
+        }
+
+        function toggleSubtitles() {
+            const toggle = document.getElementById('subtitle-toggle');
+            const panel = document.getElementById('subtitle-panel');
+            if (toggle.checked) {
+                panel.style.opacity = '1';
+                panel.style.pointerEvents = 'auto';
+            } else {
+                panel.style.opacity = '0';
+                panel.style.pointerEvents = 'none';
+            }
+        }
+
+        // 键盘交互支持
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') {
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                prevSlide();
+            } else if (e.key === ' ') {
+                toggleAutoShow();
+                e.preventDefault(); 
+            }
+        });
+
+        if (synth) {
+            synth.onvoiceschanged = () => {};
+        }
+
+        // 初始化舞台画面
+        updateSlide();
+    </script>
+</body>
+</html>
